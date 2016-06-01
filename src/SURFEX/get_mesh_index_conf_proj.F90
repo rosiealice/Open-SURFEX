@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_GET_MESH_INDEX_CONF_PROJ
+CONTAINS
 !     ###############################################################
       SUBROUTINE GET_MESH_INDEX_CONF_PROJ(KGRID_PAR,KSSO,PGRID_PAR,PLAT,PLON,KINDEX,KISSOX,KISSOY)
 !     ###############################################################
@@ -170,3 +172,5 @@ IF (LHOOK) CALL DR_HOOK('GET_MESH_INDEX_CONF_PROJ',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE GET_MESH_INDEX_CONF_PROJ
+END MODULE
+

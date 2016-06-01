@@ -2,17 +2,15 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_READ_AND_SEND_MPI
+!
+INTERFACE READ_AND_SEND_MPI
 !----------------------------------------------------
 !!    MODIFICATIONS
 !!    -------------
 !!      Original       
 !!      J.Escobar      10/06/2013: replace DOUBLE PRECISION by REAL to handle problem for promotion of real on IBM SP
 !----------------------------------------------------
-!
-MODULE MODI_READ_AND_SEND_MPI
-!
-INTERFACE READ_AND_SEND_MPI
-!
 SUBROUTINE READ_AND_SEND_MPI_N1D(KWORK,KWORK2,KMASK)
 !
 INTEGER, DIMENSION(:), INTENT(IN) :: KWORK

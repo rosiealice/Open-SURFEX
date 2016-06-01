@@ -2,6 +2,11 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DGAM
+CONTAINS
+!################################################################
+      SUBROUTINE DGAM(A, X, ACC, G, GSTAR, IFLG, IFLGST)
+!################################################################
 !######################################################################
 !######################################################################
 !
@@ -127,10 +132,7 @@
 !!      J.Escobar      10/06/2013: replace DOUBLE PRECISION by REAL to handle problem for promotion of real on IBM SP
 !----------------------------------------------------
 !################################################################
-!
-      SUBROUTINE DGAM(A, X, ACC, G, GSTAR, IFLG, IFLGST)
-!
-!################################################################
+
 
       USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
       USE PARKIND1  ,ONLY : JPRB
@@ -472,3 +474,5 @@
       END FUNCTION DLGA
 
       END SUBROUTINE DGAM
+END MODULE
+

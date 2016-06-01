@@ -2,6 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SFX_OASIS_INIT
+CONTAINS
+! ########################
 SUBROUTINE SFX_OASIS_INIT(HNAMELIST,KLOCAL_COMM,HINIT)
 !!
 !!
@@ -307,3 +310,5 @@ END SUBROUTINE FOUND_TIMERUN
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE SFX_OASIS_INIT
+END MODULE
+

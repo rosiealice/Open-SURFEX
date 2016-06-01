@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CO2_INIT_n 
+CONTAINS
 !     #########
       SUBROUTINE CO2_INIT_n (I, &
                              HPHOTO, KSIZE_NATURE_P, KR_NATURE_P, PVEGTYPE_PATCH, &
@@ -302,3 +304,5 @@ END SUBROUTINE UNPACK_CO2_INIT
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE CO2_INIT_n
+END MODULE
+

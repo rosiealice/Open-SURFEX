@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DEFAULT_SLT
+CONTAINS
 !     #########
       SUBROUTINE DEFAULT_SLT
 !     ########################################################################
@@ -60,3 +62,5 @@ IF (LHOOK) CALL DR_HOOK('DEFAULT_SLT',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE DEFAULT_SLT
+END MODULE
+

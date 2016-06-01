@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PREP_HOR_OCEAN_FIELDS 
+CONTAINS
 !     #########
 SUBROUTINE PREP_HOR_OCEAN_FIELDS (DTCO, UG, U, &
                                    O, OR, SG, S, &
@@ -176,3 +178,5 @@ ENDIF
 IF (LHOOK) CALL DR_HOOK('PREP_HOR_OCEAN_FIELDS',1,ZHOOK_HANDLE)
 !----------------------------------------------------------------------------
 END SUBROUTINE PREP_HOR_OCEAN_FIELDS
+END MODULE
+

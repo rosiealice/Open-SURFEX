@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_TEB_MORPHO
+CONTAINS
 !     ###########################################################################################################
       SUBROUTINE TEB_MORPHO(HPROGRAM, PBLD,PWALL_O_HOR, PGARDEN, PBLD_HEIGHT, PROAD, &
                             PROAD_O_GRND, PGARDEN_O_GRND, PWALL_O_GRND,              &
@@ -206,3 +208,5 @@ PSVF_GARDEN(:) = PSVF_ROAD(:)
 PSVF_WALL  (:) =  0.5*(PCAN_HW_RATIO(:)+1.-SQRT(PCAN_HW_RATIO(:)**2+1.))/PCAN_HW_RATIO(:)
 !
 END SUBROUTINE TEB_MORPHO
+END MODULE
+

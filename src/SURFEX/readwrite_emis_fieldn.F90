@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_READWRITE_EMIS_FIELD_n 
+CONTAINS
 !     #########
       SUBROUTINE READWRITE_EMIS_FIELD_n ( DTCO, DGU, U, &
                                          HPROGRAM)
@@ -181,3 +183,5 @@ IF (LHOOK) CALL DR_HOOK('READWRITE_EMIS_FIELD_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE READWRITE_EMIS_FIELD_n
+END MODULE
+

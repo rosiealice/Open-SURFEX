@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SUBSCALE_Z0EFF_1D
+CONTAINS
 !     ######################################################################
       SUBROUTINE SUBSCALE_Z0EFF_1D(PAOSIP,PAOSIM,PAOSJP,PAOSJM,            &
                                 PHO2IP,PHO2IM,PHO2JP,PHO2JM,PZ0VEG,        &
@@ -150,3 +152,5 @@ IF (LHOOK) CALL DR_HOOK('SUBSCALE_Z0EFF_1D:GET_ZOEFF',1,ZHOOK_HANDLE)
 END SUBROUTINE GET_Z0EFF
 ! 
 END SUBROUTINE SUBSCALE_Z0EFF_1D
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PREP_TEB 
+CONTAINS
 !     #########
 SUBROUTINE PREP_TEB (DTCO, UG, U, USS, IG, I, TM, GDM, GRM, &
                      HPROGRAM,HATMFILE,HATMFILETYPE,HPGDFILE,HPGDFILETYPE)
@@ -223,3 +225,5 @@ IF (LHOOK) CALL DR_HOOK('PREP_TEB',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE PREP_TEB
+END MODULE
+

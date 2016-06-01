@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_FLAG_TEB_GARDEN_n 
+CONTAINS
 !     #########
       SUBROUTINE FLAG_TEB_GARDEN_n (TGD, TGDO, TGDPE, T, TVG, &
                                     KFLAG)
@@ -172,3 +174,5 @@ IF (LHOOK) CALL DR_HOOK('FLAG_TEB_GARDEN_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE FLAG_TEB_GARDEN_n
+END MODULE
+

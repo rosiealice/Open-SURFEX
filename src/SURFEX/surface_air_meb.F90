@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SURFACE_AIR_MEB
+CONTAINS
 !####################################################################
     SUBROUTINE SURFACE_AIR_MEB(PZ0, PZ0H, PZ0G, PH_VEG, PLAI,          &
                                PTG, PTC, PTV, PVELC, PLW,              &
@@ -199,3 +201,5 @@ PGVNC(:)  = PGVNC(:)+ZDIFFT(:)*PLAI(:)/890.
 IF (LHOOK) CALL DR_HOOK('SURFACE_AIR_MEB',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE SURFACE_AIR_MEB
+END MODULE
+

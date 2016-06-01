@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_MR98      
+CONTAINS
 !     #########
       SUBROUTINE MR98      (PZ0SEA,                                         &
                               PTA, PEXNA, PRHOA, PSST, PEXNS, PQA,            &
@@ -342,3 +344,5 @@ IF (LHOOK) CALL DR_HOOK('MR98',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE MR98
+END MODULE
+

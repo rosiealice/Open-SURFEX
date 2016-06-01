@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PGD_TEB_GREENROOF_PAR 
+CONTAINS
 !     #########
       SUBROUTINE PGD_TEB_GREENROOF_PAR (DTCO, DTGR, UG, U, USS, TGRO, TG, &
                                         HPROGRAM)
@@ -218,3 +220,5 @@ IF (LHOOK) CALL DR_HOOK('PGD_TEB_GREENROOF_PAR',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE PGD_TEB_GREENROOF_PAR
+END MODULE
+

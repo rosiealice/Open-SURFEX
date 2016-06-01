@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INIT_PGD_SURF_ATM 
+CONTAINS
 !     #################################################################################
 SUBROUTINE INIT_PGD_SURF_ATM (YSC, &
                               HPROGRAM,HINIT,HATMFILE,HATMFILETYPE, &
@@ -90,3 +92,5 @@ IF (LHOOK) CALL DR_HOOK('INIT_PGD_SURF_ATM',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE INIT_PGD_SURF_ATM
+END MODULE
+

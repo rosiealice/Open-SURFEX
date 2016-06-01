@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_COUPLING_SEAFLUX_n 
+CONTAINS
 !     ###############################################################################
 SUBROUTINE COUPLING_SEAFLUX_n (SM, DST, SLT, &
                                HPROGRAM, HCOUPLING, PTIMEC,                                   &
@@ -767,3 +769,5 @@ END SUBROUTINE COMPLEMENT_EACH_OTHER_FLUX
 !=======================================================================================
 !
 END SUBROUTINE COUPLING_SEAFLUX_n
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CONVERT_COVER_CH_ISBA 
+CONTAINS
 !     #########
       SUBROUTINE CONVERT_COVER_CH_ISBA (DTCO, &
                                            PCOVER,OCOVER,PSOILRC_SO2,PSOILRC_O3)
@@ -92,3 +94,5 @@ IF (LHOOK) CALL DR_HOOK('CONVERT_COVER_CH_ISBA',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE CONVERT_COVER_CH_ISBA
+END MODULE
+

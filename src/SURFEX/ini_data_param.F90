@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INI_DATA_PARAM
+CONTAINS
 !     #########################
       SUBROUTINE INI_DATA_PARAM(PTYPE,PSURF, PSURF2, PLAI, PH_TREE,                 &
                                 PALBNIR_VEG, PALBVIS_VEG, PALBUV_VEG, PRSMIN,       &
@@ -996,3 +998,5 @@ IF (LHOOK) CALL DR_HOOK('INI_DATA_PARAM',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE INI_DATA_PARAM
+END MODULE
+

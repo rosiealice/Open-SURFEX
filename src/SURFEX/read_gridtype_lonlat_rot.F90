@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_READ_GRIDTYPE_LONLAT_ROT 
+CONTAINS
 !     ################################################################
       SUBROUTINE READ_GRIDTYPE_LONLAT_ROT (&
                                            HPROGRAM,KGRID_PAR,KLU,OREAD,KSIZE,PGRID_PAR,KRESP,HDIR)
@@ -146,3 +148,5 @@ IF (LHOOK) CALL DR_HOOK('READ_GRIDTYPE_LONLAT_ROT',1,ZHOOK_HANDLE)
 !---------------------------------------------------------------------------
 !
 END SUBROUTINE READ_GRIDTYPE_LONLAT_ROT
+END MODULE
+

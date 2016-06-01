@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PACK_DIAG_PATCH_n 
+CONTAINS
 !     #########
 SUBROUTINE PACK_DIAG_PATCH_n (DGEI, DGI, DGMI, I, PKDI, &
                               KSIZE,KSW,KPATCH)
@@ -611,3 +613,5 @@ IF (LHOOK) CALL DR_HOOK('PACK_DIAG_PATCH_N',1,ZHOOK_HANDLE)
 !------------------------------------------------------------------------
 !
 END SUBROUTINE PACK_DIAG_PATCH_n
+END MODULE
+

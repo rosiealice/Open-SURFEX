@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PREP_CTRL_IDEAL
+CONTAINS
 !     #########
       SUBROUTINE PREP_CTRL_IDEAL(K2M,OSURF_BUDGET,O2M_MIN_ZS,ORAD_BUDGET,OCOEF,OSURF_VARS,&
                                    KLUOUT,OSURF_BUDGETC)  
@@ -77,3 +79,5 @@ IF (LHOOK) CALL DR_HOOK('PREP_CTRL_IDEAL',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE PREP_CTRL_IDEAL
+END MODULE
+

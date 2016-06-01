@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_WET_LEAVES_FRAC
+CONTAINS
 !     #########
     SUBROUTINE WET_LEAVES_FRAC(PWRM, PVEG, PWRMAX_CF, PZ0, PLAI, PWRMAX, PDELTA)
 !   ############################################################################
@@ -150,3 +152,5 @@ IF (LHOOK) CALL DR_HOOK('WET_LEAVES_FRAC',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE WET_LEAVES_FRAC
+END MODULE
+

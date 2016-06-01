@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_FLAG_DIAG_UPDATE 
+CONTAINS
 !     #########
 SUBROUTINE FLAG_DIAG_UPDATE (CHF, CHI, CHS, CHT, CHW, DGEI, DGF, DGI, DGMF, DGMI, DGMTO, &
                              DGO, DGS, DGSI, DGU, DGT, DGW, I, U, &
@@ -282,4 +284,6 @@ IF (LHOOK) CALL DR_HOOK('FLAG_DIAG_UPDATE:FLAG_TEB_UPDATE',1,ZHOOK_HANDLE)
 END SUBROUTINE FLAG_TEB_UPDATE
 !
 END SUBROUTINE FLAG_DIAG_UPDATE
+
+END MODULE
 

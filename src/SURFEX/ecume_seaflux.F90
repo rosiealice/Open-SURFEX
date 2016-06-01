@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ECUME_SEAFLUX
+CONTAINS
 !     #########
     SUBROUTINE ECUME_SEAFLUX(PZ0SEA,PMASK,KSIZE_WATER,KSIZE_ICE,       &
                               PTA,PEXNA,PRHOA,PSST,PSSS,PEXNS,PQA,     &
@@ -287,3 +289,5 @@ IF (LHOOK) CALL DR_HOOK('ECUME_SEAFLUX:TREAT_SURF',1,ZHOOK_HANDLE)
 END SUBROUTINE TREAT_SURF
 !  
 END SUBROUTINE ECUME_SEAFLUX
+END MODULE
+

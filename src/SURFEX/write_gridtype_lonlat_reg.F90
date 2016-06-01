@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_WRITE_GRIDTYPE_LONLAT_REG 
+CONTAINS
 !     #################################################################
       SUBROUTINE WRITE_GRIDTYPE_LONLAT_REG (DGU, U, &
                                             HPROGRAM,KLU,KGRID_PAR,PGRID_PAR,KRESP)
@@ -123,3 +125,5 @@ IF (LHOOK) CALL DR_HOOK('WRITE_GRIDTYPE_LONLAT_REG',1,ZHOOK_HANDLE)
 !---------------------------------------------------------------------------
 !
 END SUBROUTINE WRITE_GRIDTYPE_LONLAT_REG
+END MODULE
+

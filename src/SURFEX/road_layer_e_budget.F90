@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ROAD_LAYER_E_BUDGET
+CONTAINS
 !   ##########################################################################
     SUBROUTINE ROAD_LAYER_E_BUDGET(PT_ROAD, PTSTEP, PHC_ROAD, PTC_ROAD, PD_ROAD,       &
                                    PDN_ROAD, PRHOA, PAC_ROAD, PAC_ROAD_WAT,            &
@@ -307,4 +309,6 @@ ENDDO
 IF (LHOOK) CALL DR_HOOK('ROAD_LAYER_E_BUDGET',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE ROAD_LAYER_E_BUDGET
+
+END MODULE
 

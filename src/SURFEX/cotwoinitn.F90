@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_COTWOINIT_n 
+CONTAINS
 !     #########
       SUBROUTINE COTWOINIT_n (I, &
                               HPHOTO,PVEGTYPE,PGMES,PCO2,PGC,PDMAX,            &
@@ -346,3 +348,5 @@ ZGAMMT(:)=ZGAMMT(:)*XMCO2/XMD*1e-6
 IF (LHOOK) CALL DR_HOOK('COTWOINIT_N',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE COTWOINIT_n
+END MODULE
+

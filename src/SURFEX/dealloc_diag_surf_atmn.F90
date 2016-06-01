@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DEALLOC_DIAG_SURF_ATM_n 
+CONTAINS
 !     #############################################################
       SUBROUTINE DEALLOC_DIAG_SURF_ATM_n (DGU)
 !     #############################################################
@@ -139,3 +141,5 @@ IF (LHOOK) CALL DR_HOOK('DEALLOC_DIAG_SURF_ATM_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE DEALLOC_DIAG_SURF_ATM_n
+END MODULE
+

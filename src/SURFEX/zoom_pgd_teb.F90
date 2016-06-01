@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ZOOM_PGD_TEB 
+CONTAINS
 !     ###########################################################
       SUBROUTINE ZOOM_PGD_TEB (B, DGCT, DGMT, T, TGD, TGDPE, TGR, TGRPE, &
                                BOP, BDD, DTB, DTCO, DTT, UG, U, TGDO, TGDP, TG, &
@@ -379,3 +381,5 @@ END SUBROUTINE ZOOM_PGD_TEB_GARDEN
 !_______________________________________________________________________________
 !
 END SUBROUTINE ZOOM_PGD_TEB
+END MODULE
+

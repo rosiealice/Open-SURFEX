@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CO2_TEB_GREENROOF_INIT_n 
+CONTAINS
 !     #########
       SUBROUTINE CO2_TEB_GREENROOF_INIT_n (I, TGRP, TVG, &
                                            PCO2)
@@ -116,3 +118,5 @@ IF (LHOOK) CALL DR_HOOK('CO2_TEB_GREENROOF_INIT_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE CO2_TEB_GREENROOF_INIT_n
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ISBA_SOC_PARAMETERS 
+CONTAINS
 !     #########################
 SUBROUTINE ISBA_SOC_PARAMETERS (HRUNOFF,PPATCH,PDG,PSOC,PBCOEF,PMPOTSAT,   &
                                 PCONDSAT,PWSAT,PHCAPSOIL,PCONDDRY,PCONDSLD,&
@@ -377,4 +379,6 @@ END SUBROUTINE ISBA_SOC_PARAMETERS
 
 
 
+
+END MODULE
 

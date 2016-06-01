@@ -2,6 +2,14 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_FLXSURF3BX
+CONTAINS
+!#######################
+      SUBROUTINE FLXSURF3BX(CMU, CTU, RIB, FTEMP, FVAP, ILMO,           &
+     &                   UE, FCOR, TA , QA , ZU, ZT, VA,                &
+     &                   TG , QG , H , Z0 , Z0T,                        &
+     &                   LZZ0, LZZ0T, FM, FH, N )
+!#######################
 !-------------------------------------- LICENCE BEGIN ------------------------------------
 !Environment Canada - Atmospheric Science and Technology License/Disclaimer,
 !                     version 3; Last Modified: May 7, 2008.
@@ -19,12 +27,6 @@
 !-------------------------------------- LICENCE END --------------------------------------
 !copyright (C) 2001  MSC-RPN COMM  %%%RPNPHY%%%
 !!!S/P  FLXSURF3
-!
-      SUBROUTINE FLXSURF3BX(CMU, CTU, RIB, FTEMP, FVAP, ILMO,           &
-     &                   UE, FCOR, TA , QA , ZU, ZT, VA,                &
-     &                   TG , QG , H , Z0 , Z0T,                        &
-     &                   LZZ0, LZZ0T, FM, FH, N )
-!
       USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
       USE PARKIND1  ,ONLY : JPRB
 !RJ: added modi, after freeform conversion
@@ -366,3 +368,5 @@
       END FUNCTION PSI
 !
       END SUBROUTINE FLXSURF3BX
+END MODULE
+

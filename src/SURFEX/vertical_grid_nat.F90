@@ -2,6 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_VERTICAL_GRID_NAT
+CONTAINS
+!##########################################
 SUBROUTINE VERTICAL_GRID_NAT(PDG1,PT1,PDG2,PT2)
 !##########################################
 !
@@ -89,3 +92,5 @@ END DO
 IF (LHOOK) CALL DR_HOOK('VERTICAL_GRID_NAT',1,ZHOOK_HANDLE)
 !-----------------------------------------------------------------------------
 END SUBROUTINE VERTICAL_GRID_NAT
+END MODULE
+

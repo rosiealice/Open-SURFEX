@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_BLD_OCC_CALENDAR
+CONTAINS
 !#####################################################################################
 SUBROUTINE BLD_OCC_CALENDAR(KYEAR, KMONTH, KDAY, PTSUN, PRESIDENTIAL, PTCOOL_TARGET_IN, PTHEAT_TARGET_IN, &
                             PQIN_IN, PDT_RES, PDT_OFF, PQIN_FRAC, PTCOOL_TARGET, PTHEAT_TARGET, PQIN)
@@ -144,3 +146,5 @@ ENDDO
 IF (LHOOK) CALL DR_HOOK('BLD_OCC_CALENDAR',1,ZTODOOK_HANDLE)
 !
 END SUBROUTINE BLD_OCC_CALENDAR
+END MODULE
+

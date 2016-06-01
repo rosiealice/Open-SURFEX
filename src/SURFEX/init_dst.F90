@@ -2,6 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INIT_DST 
+CONTAINS
+! ########################################################################
 SUBROUTINE INIT_DST (DST, U, &
                      HPROGRAM,  &    ! Program calling unit
                   KSIZE_NATURE_P, & ! Number of nature points in a patch
@@ -201,4 +204,6 @@ ENDDO    !Loop on veg-types
 IF (LHOOK) CALL DR_HOOK('INIT_DST',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE INIT_DST
+
+END MODULE
 

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_READ_TEB_VEG_CONF_n 
+CONTAINS
 !     #########
       SUBROUTINE READ_TEB_VEG_CONF_n (CHT, TVG, &
                                       HPROGRAM)
@@ -163,3 +165,5 @@ IF (LHOOK) CALL DR_HOOK('READ_TEB_VEG_CONF_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE READ_TEB_VEG_CONF_n
+END MODULE
+

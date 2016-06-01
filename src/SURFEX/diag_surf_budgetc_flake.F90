@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DIAG_SURF_BUDGETC_FLAKE 
+CONTAINS
 !     #########
        SUBROUTINE DIAG_SURF_BUDGETC_FLAKE (DGF, &
                                            PTSTEP, PRN, PH, PLE, PLEI, PGFLUX, &
@@ -108,3 +110,5 @@ IF (LHOOK) CALL DR_HOOK('DIAG_SURF_BUDGETC_FLAKE',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE DIAG_SURF_BUDGETC_FLAKE
+END MODULE
+

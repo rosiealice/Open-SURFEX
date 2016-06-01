@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SPLIT_GRID 
+CONTAINS
 !     ###########################################################
       SUBROUTINE SPLIT_GRID (UG, U, &
                              HPROGRAM)
@@ -90,3 +92,5 @@ IF (LHOOK) CALL DR_HOOK('SPLIT_GRID',1,ZHOOK_HANDLE)
 !_______________________________________________________________________________
 !
 END SUBROUTINE SPLIT_GRID
+END MODULE
+

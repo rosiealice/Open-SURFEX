@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SNOW_LEAVES_FRAC_MEB
+CONTAINS
 !     ##########################################################################
 SUBROUTINE SNOW_LEAVES_FRAC_MEB(PPSN, PPALPHAN,      &
                                           PWRVN,     &
@@ -174,4 +176,6 @@ END WHERE
 IF (LHOOK) CALL DR_HOOK('SNOW_LEAVES_FRAC_MEB',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE SNOW_LEAVES_FRAC_MEB
+
+END MODULE
 

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CLS_T
+CONTAINS
 !     #########
        SUBROUTINE CLS_T( PTA, PQA, PPA, PPS, PHT,    &
                             PCD, PCH, PRI,              &
@@ -130,3 +132,5 @@ IF (LHOOK) CALL DR_HOOK('CLS_T',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE CLS_T
+END MODULE
+

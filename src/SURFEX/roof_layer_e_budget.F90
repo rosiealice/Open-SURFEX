@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ROOF_LAYER_E_BUDGET
+CONTAINS
 !     #########
     SUBROUTINE ROOF_LAYER_E_BUDGET(PT_ROOF, PQSAT_ROOF, PTI_BLD, PAC_BLD, PTSTEP, &
                                    HBLD, PHC_ROOF, PTC_ROOF, PD_ROOF, PDN_ROOF,   &
@@ -362,3 +364,5 @@ IF (LHOOK) CALL DR_HOOK('ROOF_LAYER_E_BUDGET',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------
 !
 END SUBROUTINE ROOF_LAYER_E_BUDGET
+END MODULE
+

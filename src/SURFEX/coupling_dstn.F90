@@ -2,6 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_COUPLING_DST_n 
+CONTAINS
+! ##################################################################
 SUBROUTINE COUPLING_DST_n (DST, PKI, &
        HPROGRAM,                 &!I [char] Type of ISBA version
        KI,                       &!I [nbr] number of points in patch
@@ -458,4 +461,6 @@ IF (LHOOK) CALL DR_HOOK('AVG_FLUX_DST',1,ZHOOK_HANDLE)
 END SUBROUTINE AVG_FLUX_DST
     
 END SUBROUTINE COUPLING_DST_n
+
+END MODULE
 

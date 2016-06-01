@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_COUPLING_IDEAL_FLUX 
+CONTAINS
 !     ############################################################
 SUBROUTINE COUPLING_IDEAL_FLUX (DGL, &
                                 HPROGRAM, HCOUPLING, PTIMEC,                                  &
@@ -406,3 +408,5 @@ IF (LHOOK) CALL DR_HOOK('COUPLING_IDEAL_FLUX:TEMP_FORC_DISTS',1,ZHOOK_HANDLE)
 END SUBROUTINE TEMP_FORC_DISTS
 !
 END SUBROUTINE COUPLING_IDEAL_FLUX
+END MODULE
+

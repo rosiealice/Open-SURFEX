@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_READ_NAM_PGD_COVER
+CONTAINS
 !     #########
       SUBROUTINE READ_NAM_PGD_COVER(HPROGRAM, HCOVER, HFILETYPE, PUNIF_COVER,  &
                                     PRM_COVER, PRM_COAST, PRM_LAKE, ORM_RIVER, &
@@ -162,3 +164,5 @@ IF (LHOOK) CALL DR_HOOK('READ_NAM_PGD_COVER',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE READ_NAM_PGD_COVER
+END MODULE
+

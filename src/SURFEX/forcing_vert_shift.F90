@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_FORCING_VERT_SHIFT
+CONTAINS
 !     #########
        SUBROUTINE FORCING_VERT_SHIFT(PZS_ATM,PZS_SURF,PTA_ATM,PQA_ATM,PPA_ATM, &
                                      PRHOA_ATM,PLW_ATM,PRAIN_ATM,PSNOW_ATM,    &
@@ -198,3 +200,5 @@ IF (LHOOK) CALL DR_HOOK('FORCING_VERT_SHIFT',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE FORCING_VERT_SHIFT
+END MODULE
+

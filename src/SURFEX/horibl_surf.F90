@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_HORIBL_SURF
+CONTAINS
 !     #########
     SUBROUTINE HORIBL_SURF(PILA1,PILO1,PILA2,PILO2,KINLA,KINLO,KILEN,PARIN, &
                         KOLEN,PXOUT,PYOUT,PAROUT,ODVECT,KLUOUT,OINTERP,       &
@@ -814,3 +816,5 @@ IF (LHOOK) CALL DR_HOOK('HORIBL_SURF',1,ZHOOK_HANDLE)
 !
 !
 END SUBROUTINE HORIBL_SURF
+END MODULE
+

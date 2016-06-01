@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PREP_ISBA_GRIB
+CONTAINS
 !     #########
 SUBROUTINE PREP_ISBA_GRIB(HPROGRAM,HSURF,HFILE,KLUOUT,PFIELD,OKEY)
 !     #################################################################################
@@ -234,3 +236,5 @@ END SUBROUTINE SOIL_PROFILE_GRIB
 !
 !-------------------------------------------------------------------------------------
 END SUBROUTINE PREP_ISBA_GRIB
+END MODULE
+

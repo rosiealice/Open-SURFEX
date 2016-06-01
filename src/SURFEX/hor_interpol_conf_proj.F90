@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_HOR_INTERPOL_CONF_PROJ
+CONTAINS
 !     #########
 SUBROUTINE HOR_INTERPOL_CONF_PROJ(KLUOUT,PFIELDIN,PFIELDOUT)
 !     #################################################################################
@@ -143,3 +145,5 @@ IF (LHOOK) CALL DR_HOOK('HOR_INTERPOL_CONF_PROJ',1,ZHOOK_HANDLE)
 !
 !-------------------------------------------------------------------------------------
 END SUBROUTINE HOR_INTERPOL_CONF_PROJ
+END MODULE
+

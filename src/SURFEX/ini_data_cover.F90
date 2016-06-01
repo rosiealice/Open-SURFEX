@@ -2,12 +2,14 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
-#ifdef RS6K
-@PROCESS NOOPTIMIZE
-#endif
+MODULE MODI_INI_DATA_COVER 
+CONTAINS
 !     #########################
       SUBROUTINE INI_DATA_COVER (DTCO, U)
 !     #########################
+#ifdef RS6K
+@PROCESS NOOPTIMIZE
+#endif
 !
 !!**** *INI_DATA_COVER* initializes cover-field correspondance arrays
 !!
@@ -2280,3 +2282,5 @@ IF (LHOOK) CALL DR_HOOK('INI_DATA_COVER',1,ZHOOK_HANDLE)
 !------------------------------------------------------------------------------
 !
 END SUBROUTINE INI_DATA_COVER
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INIT_ISBA_MIXPAR 
+CONTAINS
 !     #########
       SUBROUTINE INIT_ISBA_MIXPAR (DTCO, DTI, IG, I, &
                                    HISBA,KDECADE,KDECADE2,PCOVER,OCOVER,HPHOTO,HSFTYPE)
@@ -406,3 +408,5 @@ IF (LHOOK) CALL DR_HOOK('INIT_ISBA_MIXPAR',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE INIT_ISBA_MIXPAR
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_READ_SURF_ISBA_PAR_n 
+CONTAINS
 !     #######################
       SUBROUTINE READ_SURF_ISBA_PAR_n (DTCO, U, I, &
                                        HPROGRAM,HREC,KLUOUT,KSIZE,PFIELD,KRESP,KVERSION,HCOMMENT,HDIR)
@@ -111,3 +113,5 @@ IF (LHOOK) CALL DR_HOOK('READ_SURF_ISBA_PAR_n',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------
 !
 END SUBROUTINE READ_SURF_ISBA_PAR_n
+END MODULE
+

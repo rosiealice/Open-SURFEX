@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_URBAN_FLUXES
+CONTAINS
 !     #########
     SUBROUTINE URBAN_FLUXES(HIMPLICIT_WIND, OCANOPY, PT_CANYON,                 &
                        PPEW_A_COEF, PPEW_B_COEF,                                &
@@ -446,3 +448,5 @@ PQF_TOWN(:)= PBLD(:)*PQF_BLD(:) + PH_TRAFFIC(:) + PH_INDUSTRY(:) + PLE_TRAFFIC(:
 IF (LHOOK) CALL DR_HOOK('URBAN_FLUXES',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE URBAN_FLUXES
+END MODULE
+

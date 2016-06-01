@@ -2,8 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DRAG_MEB
+CONTAINS
 !   ############################################################################
-!
 SUBROUTINE DRAG_MEB(LFORC_MEASURE,                                     &
                     PTG, PTC, PTV, PSNOWTEMP, PTA, PQC, PQA, PVMOD,    &
                     PWG, PWGI, PWSAT, PWFC,                            &
@@ -625,3 +626,5 @@ WHERE ( PHUGI*PQSATG < PQC .AND. PQSATG <= PQC )PHUGI(:) = 1.0
 IF (LHOOK) CALL DR_HOOK('DRAG_MEB',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE DRAG_MEB
+END MODULE
+

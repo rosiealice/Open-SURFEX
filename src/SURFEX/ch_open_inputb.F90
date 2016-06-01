@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CH_OPEN_INPUTB
+CONTAINS
 !     #########
       SUBROUTINE CH_OPEN_INPUTB(HKEYWORD,KCHANNEL,KLUOUT)
 !!    #########################################################################
@@ -108,3 +110,5 @@ WRITE(KLUOUT,*) "CH_OPEN_INPUTB-Error: Keyword ", HKEYWORD(1:8), " not found."
 IF (LHOOK) CALL DR_HOOK('CH_OPEN_INPUTB',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE CH_OPEN_INPUTB
+END MODULE
+

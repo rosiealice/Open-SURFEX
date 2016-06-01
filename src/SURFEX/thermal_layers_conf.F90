@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_THERMAL_LAYERS_CONF
+CONTAINS
 !     ######################################################################
       SUBROUTINE THERMAL_LAYERS_CONF(HTYPE,PHC,PTC,PD,PHC_OUT,PTC_OUT,PD_OUT)
 !     ######################################################################
@@ -219,3 +221,5 @@ END DO
 END SUBROUTINE
 !
 END SUBROUTINE THERMAL_LAYERS_CONF
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_READ_ISBA_CANOPY_n 
+CONTAINS
 !     #########
       SUBROUTINE READ_ISBA_CANOPY_n (DTCO, ICP, I, U, &
                                      HPROGRAM)
@@ -238,3 +240,5 @@ IF (LHOOK) CALL DR_HOOK('READ_ISBA_CANOPY_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE READ_ISBA_CANOPY_n
+END MODULE
+

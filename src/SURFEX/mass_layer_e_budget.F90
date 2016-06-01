@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_MASS_LAYER_E_BUDGET
+CONTAINS
 !   ##########################################################################
     SUBROUTINE MASS_LAYER_E_BUDGET(PT_MASS, PTSTEP, PHC_MASS, PTC_MASS, PD_MASS, &
                                     PFLX_BLD_MASS, PDQS_MASS, PIMB_MASS,           &
@@ -180,3 +182,5 @@ PIMB_MASS(:) = PFLX_BLD_MASS(:) - PDQS_MASS(:)
 IF (LHOOK) CALL DR_HOOK('MASS_LAYER_E_BUDGET',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 END SUBROUTINE MASS_LAYER_E_BUDGET
+END MODULE
+

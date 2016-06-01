@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_WRITE_DIAG_SEB_WATFLUX_n 
+CONTAINS
 !     #########
       SUBROUTINE WRITE_DIAG_SEB_WATFLUX_n (DTCO, DGU, U, CHW, DGW, &
                                            HPROGRAM)
@@ -462,3 +464,5 @@ IF (LHOOK) CALL DR_HOOK('WRITE_DIAG_SEB_WATFLUX_N',1,ZHOOK_HANDLE)
 !
 !
 END SUBROUTINE WRITE_DIAG_SEB_WATFLUX_n
+END MODULE
+

@@ -1144,4 +1144,3 @@ SUBROUTINE XY_GAUSS(PCODIL,KSIZE,PNODATA,PVALUE,PLAT_XY,PLON_XY)
   !############################################################################
 
 END MODULE MODE_GRIDTYPE_GAUSS
-

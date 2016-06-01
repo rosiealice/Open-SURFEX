@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CARBON_INIT
+CONTAINS
 !     #########
       SUBROUTINE CARBON_INIT(KNBIOMASS,KNLITTER, KNLITTLEVS, KNSOILCARB)  
 !     #####################
@@ -123,3 +125,5 @@ XTAU_SOILCARB(3) = 241.0*365.0*86400.0
 IF (LHOOK) CALL DR_HOOK('CARBON_INIT',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE CARBON_INIT
+END MODULE
+

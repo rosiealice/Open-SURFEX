@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_WALL_LAYER_E_BUDGET
+CONTAINS
 !   ##########################################################################
     SUBROUTINE WALL_LAYER_E_BUDGET(HBEM, PT_WALL, PTS_WALL_B, PTI_WALL_B, PTSTEP,          &
                                    PHC_WALL, PTC_WALL, PD_WALL, PDN_ROAD, PRHOA, PAC_WALL, &
@@ -400,3 +402,5 @@ END IF
 IF (LHOOK) CALL DR_HOOK('WALL_LAYER_E_BUDGET',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE WALL_LAYER_E_BUDGET
+END MODULE
+

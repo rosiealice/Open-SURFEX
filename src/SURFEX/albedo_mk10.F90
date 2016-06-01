@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ALBEDO_MK10
+CONTAINS
 !     ######spl
       FUNCTION ALBEDO_MK10(PZENITH) RESULT(PDIR_ALB)
 !     ##################################################################
@@ -67,3 +69,5 @@ IF (LHOOK) CALL DR_HOOK('ALBEDO_MK10',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END FUNCTION ALBEDO_MK10
+END MODULE
+

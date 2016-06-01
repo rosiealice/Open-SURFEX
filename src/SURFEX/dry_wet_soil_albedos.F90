@@ -2,10 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
-!      #########################
 MODULE MODI_DRY_WET_SOIL_ALBEDOS
 !      #########################
-!
 INTERFACE DRY_WET_SOIL_ALBEDOS
 !
 !
@@ -279,4 +277,3 @@ IF (LHOOK) CALL DR_HOOK('MODI_DRY_WET_SOIL_ALBEDOS:DRY_WET_SOIL_ALBEDOS_2D',1,ZH
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE DRY_WET_SOIL_ALBEDOS_2D
-

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_AVERAGED_TSRAD_TEB
+CONTAINS
 !     #########
       SUBROUTINE AVERAGED_TSRAD_TEB(PEMIS_ROOF, PTS_ROOF,           &
                                     PEMIS_ROAD, PTS_ROAD,           &
@@ -259,3 +261,5 @@ IF (LHOOK) CALL DR_HOOK('AVERAGED_TSRAD_TEB',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE AVERAGED_TSRAD_TEB
+END MODULE
+

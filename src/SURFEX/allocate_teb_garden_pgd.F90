@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ALLOCATE_TEB_GARDEN_PGD 
+CONTAINS
 !     #########
     SUBROUTINE ALLOCATE_TEB_GARDEN_PGD (TGDPE, TGDP, &
                                         OALLOC,KLU,KVEGTYPE,KGROUND_LAYER, KDIMTAB)  
@@ -133,3 +135,5 @@ ALLOCATE(TGDP%XD_ICE                  (KLU                     ))
 IF (LHOOK) CALL DR_HOOK('ALLOCATE_TEB_GARDEN_PGD',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE ALLOCATE_TEB_GARDEN_PGD
+END MODULE
+

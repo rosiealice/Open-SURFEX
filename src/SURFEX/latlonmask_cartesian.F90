@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_LATLONMASK_CARTESIAN
+CONTAINS
 !     ##################################
       SUBROUTINE LATLONMASK_CARTESIAN(KGRID_PAR,PGRID_PAR,OLATLONMASK)
 !     ##################################
@@ -102,3 +104,5 @@ IF (LHOOK) CALL DR_HOOK('LATLONMASK_CARTESIAN',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE LATLONMASK_CARTESIAN
+END MODULE
+

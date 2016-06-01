@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CANOPY_EVOL_TKE
+CONTAINS
 !     #########
       SUBROUTINE CANOPY_EVOL_TKE(KI,KLVL,PTSTEP,PRHOA,             &
                                    PZ,PZF,PDZ,PDZF,                  &
@@ -216,3 +218,5 @@ IF (LHOOK) CALL DR_HOOK('CANOPY_EVOL_TKE',1,ZHOOK_HANDLE)
 !----------------------------------------------------------------
 !
 END SUBROUTINE CANOPY_EVOL_TKE
+END MODULE
+

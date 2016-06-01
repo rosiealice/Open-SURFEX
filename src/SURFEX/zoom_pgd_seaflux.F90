@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ZOOM_PGD_SEAFLUX 
+CONTAINS
 !     ######spl
       SUBROUTINE ZOOM_PGD_SEAFLUX (DTCO, DTS, SG, S, UG, U, &
                                    HPROGRAM,HINIFILE,HINIFILETYPE,HFILE,HFILETYPE)
@@ -193,3 +195,5 @@ IF (LHOOK) CALL DR_HOOK('ZOOM_PGD_SEAFLUX',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE ZOOM_PGD_SEAFLUX
+END MODULE
+

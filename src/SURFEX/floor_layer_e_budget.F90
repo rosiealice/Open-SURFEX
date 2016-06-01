@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_FLOOR_LAYER_E_BUDGET
+CONTAINS
 !   ##########################################################################
     SUBROUTINE FLOOR_LAYER_E_BUDGET(PT_FLOOR, PTSTEP, PHC_FLOOR, PTC_FLOOR, PD_FLOOR, &
                                     PFLX_BLD_FLOOR, PDQS_FLOOR, PIMB_FLOOR,           &
@@ -190,3 +192,5 @@ PIMB_FLOOR(:) = PFLX_BLD_FLOOR(:) - PDQS_FLOOR(:)
 IF (LHOOK) CALL DR_HOOK('FLOOR_LAYER_E_BUDGET',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 END SUBROUTINE FLOOR_LAYER_E_BUDGET
+END MODULE
+

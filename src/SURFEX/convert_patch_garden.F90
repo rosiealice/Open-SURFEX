@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CONVERT_PATCH_GARDEN 
+CONTAINS
 !#############################################################
 SUBROUTINE CONVERT_PATCH_GARDEN (DTCO, DTI, I, TGDO, TGDPE, TGDP, TOP, TVG, &
                                  KLU,KDECADE)
@@ -180,3 +182,5 @@ IF (LHOOK) CALL DR_HOOK('CONVERT_PATCH_GARDEN',1,ZHOOK_HANDLE)
 !
 !
 END SUBROUTINE CONVERT_PATCH_GARDEN
+END MODULE
+

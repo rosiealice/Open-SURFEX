@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_COUPLING_TEB_n 
+CONTAINS
 !     ###############################################################################
 SUBROUTINE COUPLING_TEB_n (DTCO, DTI, IG, I, DST, SLT, TM, GDM, GRM, &
                            HPROGRAM, HCOUPLING,                                             &
@@ -1254,4 +1256,6 @@ END SUBROUTINE ADD_PATCH_CONTRIB
 !
 END SUBROUTINE COUPLING_TEB_n
 
+
+END MODULE
 

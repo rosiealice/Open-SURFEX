@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_URBAN_SOLAR_ABS
+CONTAINS
 !     #########
     SUBROUTINE URBAN_SOLAR_ABS(HBEM, HROAD_DIR, HWALL_OPT,                     &
                                  PDIR_SW, PSCA_SW, PZENITH, PAZIM,             &
@@ -899,3 +901,5 @@ END SUBROUTINE TOWN_ALBEDO
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE URBAN_SOLAR_ABS
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_E_BUDGET_MEB
+CONTAINS
 !     ##########################################################################
       SUBROUTINE E_BUDGET_MEB(HISBA,HCPSURF,PTSTEP,                                           &
            PPS,PCG,PCT,PCV,PWRVN,PWR,                                                         &
@@ -974,4 +976,6 @@ IF (LHOOK) CALL DR_HOOK('E_BUDGET_MEB',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE E_BUDGET_MEB
 
+
+END MODULE
 

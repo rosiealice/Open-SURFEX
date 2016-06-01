@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_START_LAKE_OF
+CONTAINS
 !     #######
 SUBROUTINE START_LAKE_OF(KDAY, KMONTH, PLON, PLAT, PDEPTH, &   ! IN
                      PT_SNOW, PT_ICE, PT_MNW, PT_WML, PT_BOT, PT_B1, PCT, & ! Lake variables
@@ -271,3 +273,5 @@ PT_SFC  = XAUXT_SFC
 IF (LHOOK) CALL DR_HOOK('START_LAKE_OF',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE START_LAKE_OF
+END MODULE
+

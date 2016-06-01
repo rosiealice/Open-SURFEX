@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_GET_Z0_n 
+CONTAINS
 !     #########
       SUBROUTINE GET_Z0_n (DGU, &
                            HPROGRAM,KI,PZ0,PZ0H)
@@ -86,3 +88,5 @@ IF (LHOOK) CALL DR_HOOK('GET_Z0_N',1,ZHOOK_HANDLE)
 !==============================================================================
 !
 END SUBROUTINE GET_Z0_n
+END MODULE
+

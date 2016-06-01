@@ -2,6 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ASSIM_ISBA_UPDATE_SNOW 
+CONTAINS
+! #####################################
 SUBROUTINE ASSIM_ISBA_UPDATE_SNOW (I, &
                                    HPROGRAM, KI, PSWE, PSWE_ORIG, OINITSNOW, OINC, HTEST )
 
@@ -114,3 +117,4 @@ ENDIF
 ! -------------------------------------------------------------------------------------
  IF (LHOOK) CALL DR_HOOK('ASSIM_ISBA_UPDATE_SNOW',1,ZHOOK_HANDLE)
  END SUBROUTINE ASSIM_ISBA_UPDATE_SNOW
+END MODULE

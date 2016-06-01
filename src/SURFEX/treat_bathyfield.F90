@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_TREAT_BATHYFIELD 
+CONTAINS
 !     #########
       SUBROUTINE TREAT_BATHYFIELD (UG, U, USS, &
                                    HPROGRAM,HSCHEME,HFILETYPE,    &
@@ -157,3 +159,5 @@ IF (LHOOK) CALL DR_HOOK('TREAT_BATHYFIELD',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE TREAT_BATHYFIELD
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_TEB_CANOPY
+CONTAINS
 !     #########
 SUBROUTINE TEB_CANOPY(KI,KLVL,PZ,PZF,PDZ,PDZF,PBLD,PBLD_HEIGHT,PWALL_O_HOR,PPA,PRHOA,PU,         &
                       PDUWDU_ROAD, PUW_ROOF, PDUWDU_ROOF,                                        &
@@ -269,3 +271,5 @@ IF (LHOOK) CALL DR_HOOK('TEB_CANOPY',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE TEB_CANOPY
+END MODULE
+

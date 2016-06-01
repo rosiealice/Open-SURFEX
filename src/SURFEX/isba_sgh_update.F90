@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ISBA_SGH_UPDATE 
+CONTAINS
 !     #######################################################################
       SUBROUTINE ISBA_SGH_UPDATE (IG, I, &
                                   HISBA,HRUNOFF,HRAIN,PRAIN,PMUF,PFSAT,PTOPQS)
@@ -300,3 +302,5 @@ IF (LHOOK) CALL DR_HOOK('ISBA_SGH_UPDATE',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------
 !
 END SUBROUTINE ISBA_SGH_UPDATE
+END MODULE
+

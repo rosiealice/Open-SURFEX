@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PREP_GRID_EXTERN 
+CONTAINS
 !     #########
       SUBROUTINE PREP_GRID_EXTERN (&
                                    HFILETYPE,KLUOUT,HGRIDTYPE,HINTERP_TYPE,KNI)
@@ -108,3 +110,5 @@ IF (LHOOK) CALL DR_HOOK('PREP_GRID_EXTERN',1,ZHOOK_HANDLE)
 !-----------------------------------------------------------------------
 !
 END SUBROUTINE PREP_GRID_EXTERN
+END MODULE
+

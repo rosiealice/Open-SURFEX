@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_TRIDIAG_SURF
+CONTAINS
 !     #########
        SUBROUTINE TRIDIAG_SURF(PVARM,PF,PDFDDTDZ,PEXT,PDEXTDV,PTSTEP,  &
                                    PDZZ,PDZM,PVARP,OIMPL,PALFA,PBETA     )  
@@ -301,3 +303,5 @@ IF (LHOOK) CALL DR_HOOK('TRIDIAG_SURF',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE TRIDIAG_SURF
+END MODULE
+

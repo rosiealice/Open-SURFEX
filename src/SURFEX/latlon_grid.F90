@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_LATLON_GRID
+CONTAINS
 !     #########
       SUBROUTINE LATLON_GRID(HGRID,KGRID_PAR,KL,KLUOUT,PGRID_PAR,PLAT,PLON,PMESH_SIZE,PDIR)
 !     #########################################################################
@@ -150,3 +152,5 @@ IF (LHOOK) CALL DR_HOOK('LATLON_GRID',1,ZHOOK_HANDLE)
 !---------------------------------------------------------------------------
 !
 END SUBROUTINE LATLON_GRID
+END MODULE
+

@@ -2,6 +2,18 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_OI_CACSTS
+CONTAINS
+! ############################################################################
+SUBROUTINE OI_CACSTS(KNBPT,PT2INC,PH2INC,PWGINC,PWS_O,                      &
+                     KDAT,KSSSSS,                                           &
+                     PTP,PWP,PTL,PSNS,PTS,PWS,                              &
+                     PTCLS,PHCLS,PUCLS,PVCLS,PSSTC,PWPINC1,PWPINC2,PWPINC3, &
+                     PT2MBIAS,PH2MBIAS,                                     &
+                     PRRCL,PRRSL,PRRCN,PRRSN,PATMNEB,PEVAP,PEVAPTR,         &
+                     PITM,PVEG,PALBF,PEMISF,PZ0F,                           &
+                     PIVEG,PARG,PD2,PSAB,PLAI,PRSMIN,PZ0H,                  &
+                     PTSC,PTPC,PWSC,PWPC,PSNC,PGELAT,PGELAM,PGEMU)  
 !option! -O nomove
 !****---------------------------------------------------------------------------
 !****   CACSTS : INITIALIZES THE SURFACE FIELDS
@@ -20,17 +32,6 @@
 !        A.Trojakova   27-Jun-2007 bugfixing ZV10M (surface pointers)
 !        F. Bouyssel    27-Mar-2011  Use of REPS2 instead of REPS3 for ZNEI
 !****---------------------------------------------------------------------------
-!
-SUBROUTINE OI_CACSTS(KNBPT,PT2INC,PH2INC,PWGINC,PWS_O,                      &
-                     KDAT,KSSSSS,                                           &
-                     PTP,PWP,PTL,PSNS,PTS,PWS,                              &
-                     PTCLS,PHCLS,PUCLS,PVCLS,PSSTC,PWPINC1,PWPINC2,PWPINC3, &
-                     PT2MBIAS,PH2MBIAS,                                     &
-                     PRRCL,PRRSL,PRRCN,PRRSN,PATMNEB,PEVAP,PEVAPTR,         &
-                     PITM,PVEG,PALBF,PEMISF,PZ0F,                           &
-                     PIVEG,PARG,PD2,PSAB,PLAI,PRSMIN,PZ0H,                  &
-                     PTSC,PTPC,PWSC,PWPC,PSNC,PGELAT,PGELAM,PGEMU)  
-!
 !****---------------------------------------------------------------------------
 !**  AIM : INITIALIZES THE PRONOSTIC SURFACE FIELDS
 !**  ---
@@ -521,3 +522,4 @@ END SUBROUTINE
 !
 !**---------------------------------------------------------------------
 END SUBROUTINE OI_CACSTS
+END MODULE

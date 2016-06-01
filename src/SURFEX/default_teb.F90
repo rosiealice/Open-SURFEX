@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DEFAULT_TEB
+CONTAINS
 !     #########
       SUBROUTINE DEFAULT_TEB(HZ0H,PTSTEP,POUT_TSTEP, HCH_BEM, PDT_RES, PDT_OFF)
 !     ########################################################################
@@ -75,3 +77,5 @@ IF (LHOOK) CALL DR_HOOK('DEFAULT_TEB',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE DEFAULT_TEB
+END MODULE
+

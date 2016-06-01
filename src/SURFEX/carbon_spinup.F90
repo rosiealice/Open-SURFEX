@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CARBON_SPINUP
+CONTAINS
 !     #########
       SUBROUTINE CARBON_SPINUP(KMONTH,KDAY,PTIME,                      &
                    OSPINUPCARBS, OSPINUPCARBW, PSPINMAXS, PSPINMAXW,   &
@@ -107,3 +109,5 @@ IF (LHOOK) CALL DR_HOOK('CARBON_SPINUP',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE 
+END MODULE
+

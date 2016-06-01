@@ -2,6 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_FACADE_E_BUDGET
+CONTAINS
+! ##############################################################################
 SUBROUTINE FACADE_E_BUDGET(HWALL_OPT, HBEM,                                    &
                            PT_WALL_A, PT_WALL_B, PTSTEP,                       &
                            PHC_WALL, PTC_WALL, PD_WALL,                        &
@@ -306,3 +309,5 @@ PEMIT_LW_FAC (:) = 0.5*(ZEMIT_LW_WALL_A(:)+ZEMIT_LW_WALL_B(:)) * (1-PGR(:)) +  Z
 !-------------------------------------------------------------------------------
 IF (LHOOK) CALL DR_HOOK('FACADE_E_BUDGET',1,ZHOOK_HANDLE)
 END SUBROUTINE FACADE_E_BUDGET
+END MODULE
+

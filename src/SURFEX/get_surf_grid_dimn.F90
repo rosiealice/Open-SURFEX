@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_GET_SURF_GRID_DIM_n 
+CONTAINS
 !     #######################################################
       SUBROUTINE GET_SURF_GRID_DIM_n (UG, &
                                       HGRID,ORECT,KDIM1,KDIM2)
@@ -70,3 +72,5 @@ IF (LHOOK) CALL DR_HOOK('GET_SURF_GRID_DIM_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE GET_SURF_GRID_DIM_n
+END MODULE
+

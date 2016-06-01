@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SW_DAYCYCLE
+CONTAINS
 !     #############################################################
 SUBROUTINE SW_DAYCYCLE(KI, PZENITH, PTOT_SW)
 !     #############################################################
@@ -36,4 +38,6 @@ END DO
 IF (LHOOK) CALL DR_HOOK('SW_DAYCYCLE',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE SW_DAYCYCLE
+
+END MODULE
 

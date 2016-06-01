@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PREP_SNOW_EXTERN 
+CONTAINS
 !     #########
 SUBROUTINE PREP_SNOW_EXTERN (&
                              HPROGRAM,HSURF,HFILE,HFILETYPE,HFILEPGD,HFILEPGDTYPE,&
@@ -419,3 +421,5 @@ IF (LHOOK) CALL DR_HOOK('PREP_SNOW_EXTERN',1,ZHOOK_HANDLE)
 !
 !-------------------------------------------------------------------------------------
 END SUBROUTINE PREP_SNOW_EXTERN
+END MODULE
+

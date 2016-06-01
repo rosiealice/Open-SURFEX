@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PREP_WATFLUX_UNIF
+CONTAINS
 !     #########
 SUBROUTINE PREP_WATFLUX_UNIF(KLUOUT,HSURF,PFIELD)
 !     #################################################################################
@@ -75,3 +77,5 @@ IF (LHOOK) CALL DR_HOOK('PREP_WATFLUX_UNIF',1,ZHOOK_HANDLE)
 !
 !-------------------------------------------------------------------------------------
 END SUBROUTINE PREP_WATFLUX_UNIF
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SNOW_LOAD_MEB
+CONTAINS
 !   ############################################################################
 SUBROUTINE SNOW_LOAD_MEB(PTSTEP,PSR,PTV,PWRVNMAX,PKVN,PCHEATV,PLERCV,PLESC,PMELTVN, &
           PVELC,PMELTCV,PFRZCV,PUNLOADSNOW,PWRV,PWRVN,PSUBVCOR,PLVTT,PLSTT)
@@ -178,3 +180,5 @@ END WHERE
 IF (LHOOK) CALL DR_HOOK('SNOW_LOAD_MEB',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE SNOW_LOAD_MEB
+END MODULE
+

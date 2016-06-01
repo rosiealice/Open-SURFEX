@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ISBA_CEB
+CONTAINS
 !#########
 SUBROUTINE ISBA_CEB(HISBA, HSNOW_ISBA, HCPSURF, OFLOOD, OTEMP_ARP, HIMPLICIT_WIND, &
                     PTSTEP, PSODELX, PPEW_A_COEF, PPEW_B_COEF, PPET_A_COEF,        &
@@ -653,3 +655,5 @@ IF (LHOOK) CALL DR_HOOK('ISBA_CEB',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE ISBA_CEB
+END MODULE
+

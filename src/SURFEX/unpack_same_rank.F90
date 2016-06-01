@@ -2,8 +2,7 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
-!     ##########################
-      MODULE MODI_UNPACK_SAME_RANK
+MODULE MODI_UNPACK_SAME_RANK
 !     ##########################
 INTERFACE UNPACK_SAME_RANK
       SUBROUTINE UNPACK_SAME_RANK_FROM1DI(KM,K1D_IN,K1D_OUT,KMISS)

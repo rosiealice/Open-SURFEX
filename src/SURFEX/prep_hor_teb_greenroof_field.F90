@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PREP_HOR_TEB_GREENROOF_FIELD 
+CONTAINS
 !     #########
 SUBROUTINE PREP_HOR_TEB_GREENROOF_FIELD (DTCO, IG, I, UG, U, USS, TGR, TGRO, TGRPE, TGRP, &
                                          TG, TOP, &
@@ -400,3 +402,5 @@ END SUBROUTINE INIT_FROM_REF_GRID
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE PREP_HOR_TEB_GREENROOF_FIELD
+END MODULE
+

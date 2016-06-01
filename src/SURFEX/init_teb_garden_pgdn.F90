@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INIT_TEB_GARDEN_PGD_n 
+CONTAINS
 !#############################################################
         SUBROUTINE INIT_TEB_GARDEN_PGD_n (DTCO, U, CHI, DTI, I, DST, SLT, CHT, TG, T, TOP, GDM, &
                                           HPROGRAM,HINIT, OREAD_PGD,KI, KSV, HSV, KVERSION, KBUGFIX, &
@@ -313,3 +315,5 @@ IF (LHOOK) CALL DR_HOOK('INIT_TEB_GARDEN_PGD_n',1,ZHOOK_HANDLE)
 !
 !
 END SUBROUTINE INIT_TEB_GARDEN_PGD_n
+END MODULE
+

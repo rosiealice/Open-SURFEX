@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ALLOC_DIAG_TEB_GREENROOF 
+CONTAINS
 !     #########
     SUBROUTINE ALLOC_DIAG_TEB_GREENROOF (DGGR, TGR, &
                                          KLU,KLAYER_GR,KSW)
@@ -81,3 +83,5 @@ IF (LHOOK) CALL DR_HOOK('ALLOC_DIAG_TEB_GREENROOF',1,ZHOOK_HANDLE)
 !
 !
 END SUBROUTINE ALLOC_DIAG_TEB_GREENROOF
+END MODULE
+

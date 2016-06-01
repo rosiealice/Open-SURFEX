@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PGD_TOWN 
+CONTAINS
 !     #########
       SUBROUTINE PGD_TOWN (DTCO, DGU, UG, U, USS, DTI, TM, GDM, GRM, &
                            HPROGRAM,OECOCLIMAP,OGARDEN)
@@ -103,3 +105,5 @@ IF (LHOOK) CALL DR_HOOK('PGD_TOWN',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE PGD_TOWN
+END MODULE
+

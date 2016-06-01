@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ICE_SOILDIF
+CONTAINS
 !     #########
       SUBROUTINE ICE_SOILDIF(PTSTEP, PTAUICE, PKSFC_IVEG, PLEGI,                 &
                             PSOILHCAPZ, PWSATZ, PMPOTSATZ, PBCOEFZ,              &
@@ -288,3 +290,5 @@ IF (LHOOK) CALL DR_HOOK('ICE_SOILDIF',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE ICE_SOILDIF
+END MODULE
+

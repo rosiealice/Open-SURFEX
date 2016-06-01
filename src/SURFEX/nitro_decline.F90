@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_NITRO_DECLINE
+CONTAINS
 !     #########
 SUBROUTINE NITRO_DECLINE(HPHOTO, HRESPSL, OTR_ML, KSPINW ,            &
                 PBSLAI_NITRO, PSEFOLD, PGMES, PANMAX, PANDAY,         &
@@ -507,3 +509,5 @@ ENDIF
 IF (LHOOK) CALL DR_HOOK('NITRO_DECLINE',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE NITRO_DECLINE
+END MODULE
+

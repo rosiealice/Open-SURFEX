@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ASSIM_SET_SST 
+CONTAINS
 !     ###############################################################################
 SUBROUTINE ASSIM_SET_SST (DTCO, DGU, S, U, &
                           KI,PITM,PSST,PSIC,HTEST)
@@ -248,3 +250,4 @@ IF (LHOOK) CALL DR_HOOK('ASSIM_SET_SST',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE ASSIM_SET_SST
+END MODULE

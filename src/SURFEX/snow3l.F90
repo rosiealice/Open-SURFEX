@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SNOW3L
+CONTAINS
 !     #########
       SUBROUTINE SNOW3L(HSNOWRES, TPTIME, OMEB, HIMPLICIT_WIND,           &
                 PPEW_A_COEF, PPEW_B_COEF,                                 &
@@ -3217,3 +3219,5 @@ END SUBROUTINE SNOW3LEBUDMEB
 !
 !
 END SUBROUTINE SNOW3L
+END MODULE
+

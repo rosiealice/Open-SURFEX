@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CONTROL_TEMP_FUNC 
+CONTAINS
 !   ################
 FUNCTION CONTROL_TEMP_FUNC (PTEMP_IN) RESULT (PTEMPFUNC_RESULT)
 
@@ -81,4 +83,6 @@ IF (LHOOK) CALL DR_HOOK('CONTROL_TEMP_FUNC',1,ZHOOK_HANDLE)
 
 END FUNCTION CONTROL_TEMP_FUNC
 
+
+END MODULE
 

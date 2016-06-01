@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CONVERT_PATCH_TEB_GREENROOF 
+CONTAINS
 !#############################################################
 SUBROUTINE CONVERT_PATCH_TEB_GREENROOF (DTCO, DTI, I, TGRO, TGRPE, TGRP, TOP, TVG, &
                                         KLU,KDECADE)
@@ -190,3 +192,5 @@ IF (LHOOK) CALL DR_HOOK('CONVERT_PATCH_TEB_GREENROOF',1,ZHOOK_HANDLE)
 !
 !
 END SUBROUTINE CONVERT_PATCH_TEB_GREENROOF
+END MODULE
+

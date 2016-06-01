@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INIT_IO_SURF_n 
+CONTAINS
 !     #########
       SUBROUTINE INIT_IO_SURF_n (DTCO, DGU, U, &
                                  HPROGRAM,HMASK,HSCHEME,HACTION)
@@ -163,3 +165,5 @@ IF (LHOOK) CALL DR_HOOK('INIT_IO_SURF_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE INIT_IO_SURF_n
+END MODULE
+

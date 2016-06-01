@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_UTCI_TEB
+CONTAINS
 !   ##########################################################################
 SUBROUTINE UTCI_TEB(PT_CAN, PQ_CAN, PTI_BLD, PQI_BLD, PU10, PPS,         &
                     PREF_SW_GRND, PREF_SW_FAC, PSCA_SW, PDIR_SW, PZENITH,&
@@ -115,3 +117,5 @@ PTRAD_SHADE = TRAD_BODY(PSCA_SW,PREF_SW_FAC, PREF_SW_GRND, &
 PUTCI_OUTSHADE = UTCI_APPROX(PT_CAN - XTT, ZEHPA, PTRAD_SHADE - XTT, PU10)
 IF (LHOOK) CALL DR_HOOK('UTCI_TEB',1,ZHOOK_HANDLE)
 END SUBROUTINE UTCI_TEB
+END MODULE
+

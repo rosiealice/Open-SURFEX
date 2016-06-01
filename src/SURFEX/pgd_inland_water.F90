@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PGD_INLAND_WATER 
+CONTAINS
 !     #########
       SUBROUTINE PGD_INLAND_WATER (DTCO, FG, F, UG, U, USS, WG, W, &
                                    HPROGRAM,OECOCLIMAP,ORM_RIVER)
@@ -110,3 +112,5 @@ IF (LHOOK) CALL DR_HOOK('PGD_INLAND_WATER',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE PGD_INLAND_WATER
+END MODULE
+

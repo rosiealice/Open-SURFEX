@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_COUPLING_SEAFLUX_SBL_n 
+CONTAINS
 !     ###############################################################################
 SUBROUTINE COUPLING_SEAFLUX_SBL_n (SM, DST, SLT, &
                                   HPROGRAM, HCOUPLING,  PTIMEC, PTSTEP, KYEAR, KMONTH, KDAY, PTIME, &
@@ -360,3 +362,5 @@ IF (LHOOK) CALL DR_HOOK('COUPLING_SEAFLUX_SBL_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE COUPLING_SEAFLUX_SBL_n
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_VEGETATION_UPDATE_GARDEN 
+CONTAINS
 !     #########
     SUBROUTINE VEGETATION_UPDATE_GARDEN (DTCO, DTI, IG, I, T, TOP, DTGR, TGRO, GDM, &
                                          TPTIME,PTSTEP,KLU)  
@@ -263,3 +265,5 @@ IF (LHOOK) CALL DR_HOOK('VEGETATION_UPDATE_GARDEN',1,ZHOOK_HANDLE)
 !
 !
 END SUBROUTINE VEGETATION_UPDATE_GARDEN
+END MODULE
+

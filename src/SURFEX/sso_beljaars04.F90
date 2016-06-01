@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SSO_BELJAARS04 
+CONTAINS
 !     ###########################################################################
 SUBROUTINE SSO_BELJAARS04 (USS, &
                            KI,KLVL,PZ,PSSO_STDEV,PU,PFORC_U,PDFORC_UDU)
@@ -108,3 +110,5 @@ IF (LHOOK) CALL DR_HOOK('SSO_BELJAARS04',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE SSO_BELJAARS04
+END MODULE
+

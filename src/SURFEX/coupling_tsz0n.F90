@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_COUPLING_TSZ0_n 
+CONTAINS
 !     ###############################################################################
 SUBROUTINE COUPLING_TSZ0_n (DTCO, UG, U, USS, IM, DTZ, DTGD, DTGR, TGRO, DST, SLT,  &
                             HPROGRAM, HCOUPLING,                                              &
@@ -238,3 +240,5 @@ IF (LHOOK) CALL DR_HOOK('COUPLING_TSZ0_N',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------------
 !
 END SUBROUTINE COUPLING_TSZ0_n
+END MODULE
+

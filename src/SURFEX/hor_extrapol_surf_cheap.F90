@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_HOR_EXTRAPOL_SURF_CHEAP
+CONTAINS
 !     #########
       SUBROUTINE HOR_EXTRAPOL_SURF_CHEAP(KLUOUT,HCOORTYPE,PLAT_IN,PLON_IN,PFIELD_IN, &
                                          PLAT,PLON,PFIELD,OINTERP)  
@@ -190,3 +192,5 @@ END DO
 IF (LHOOK) CALL DR_HOOK('HOR_EXTRAPOL_SURF_CHEAP',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE HOR_EXTRAPOL_SURF_CHEAP
+END MODULE
+

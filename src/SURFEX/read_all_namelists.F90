@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_READ_ALL_NAMELISTS 
+CONTAINS
 !     #########
 SUBROUTINE READ_ALL_NAMELISTS (YSC, &
                                HPROGRAM,HINIT,ONAM_READ)
@@ -122,3 +124,5 @@ ENDIF
 IF (LHOOK) CALL DR_HOOK('READ_ALL_NAMELISTS',1,ZHOOK_HANDLE)
 !-------------------------------------------
 END SUBROUTINE READ_ALL_NAMELISTS
+END MODULE
+

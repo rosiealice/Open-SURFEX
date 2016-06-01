@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SFX_OASIS_SEND
+CONTAINS
 !#########
 SUBROUTINE SFX_OASIS_SEND(KLUOUT,KI,KDATE,OSEND_LAND,OSEND_LAKE,OSEND_SEA,      &
                           PLAND_RUNOFF,PLAND_DRAIN,PLAND_CALVING,PLAND_RECHARGE,&
@@ -374,3 +376,5 @@ END SUBROUTINE OUTVAR
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE SFX_OASIS_SEND
+END MODULE
+

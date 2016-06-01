@@ -2,6 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_ASSIM_NATURE_ISBA_EKF 
+CONTAINS
+! ####################################
 SUBROUTINE ASSIM_NATURE_ISBA_EKF (I, &
                                   HPROGRAM, KI, PT2M, PHU2M, HTEST)
 
@@ -695,3 +698,4 @@ ENDDO
 IF (LHOOK) CALL DR_HOOK('ASSIM_NATURE_ISBA_EKF',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE ASSIM_NATURE_ISBA_EKF
+END MODULE

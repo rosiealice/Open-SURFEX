@@ -2,8 +2,7 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
-!     ##########################
-      MODULE MODI_SUBSCALE_Z0EFF
+MODULE MODI_SUBSCALE_Z0EFF
 !     ##########################
 INTERFACE SUBSCALE_Z0EFF
       SUBROUTINE SUBSCALE_Z0EFF_1D_NVEG(PAOSIP,PAOSIM,PAOSJP,PAOSJM,            &

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DRAG
+CONTAINS
 !     #########
     SUBROUTINE DRAG(HISBA, HSNOW_ISBA, HCPSURF, PTSTEP,                  &
                       PTG, PWG, PWGI,                                    &
@@ -504,3 +506,5 @@ END SUBROUTINE LIMIT_LER
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE DRAG
+END MODULE
+

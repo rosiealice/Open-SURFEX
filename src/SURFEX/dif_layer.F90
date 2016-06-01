@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DIF_LAYER
+CONTAINS
 !#############################################################
 SUBROUTINE DIF_LAYER(KLU, KGROUND_LAYER, KPATCH, KSIZE_NATURE_P, &
                      PPATCH, PDG, PDROOT, PDG2, PROOTFRAC,       &
@@ -187,3 +189,5 @@ KLAYER_DUN=MAXVAL(IWORK(:,:),IWORK(:,:)/=NUNDEF)
 IF (LHOOK) CALL DR_HOOK('DIF_LAYER',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE DIF_LAYER
+END MODULE
+

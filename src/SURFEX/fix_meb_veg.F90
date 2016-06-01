@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_FIX_MEB_VEG 
+CONTAINS
 !     ################################################################
       SUBROUTINE FIX_MEB_VEG (DTI, IG, I, &
                               KPATCH)
@@ -125,4 +127,6 @@ IF (LHOOK) CALL DR_HOOK('FIX_MEB_VEG',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !   
 END SUBROUTINE FIX_MEB_VEG
+
+END MODULE
 

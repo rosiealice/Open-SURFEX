@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_TEB  
+CONTAINS
 !   ##########################################################################
     SUBROUTINE TEB  (HZ0H, HIMPLICIT_WIND, HWALL_OPT, HBEM, TPTIME, PTSUN,     &
                      PT_CANYON, PQ_CANYON, PU_CANYON,                          &
@@ -1085,3 +1087,5 @@ IF (LHOOK) CALL DR_HOOK('TEB',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE TEB
+END MODULE
+

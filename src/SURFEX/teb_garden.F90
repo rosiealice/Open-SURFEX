@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_TEB_GARDEN 
+CONTAINS
 !     #########
     SUBROUTINE TEB_GARDEN (DTCO, DTI, IG, I, TM, GDM, GRM,  &
                             OGARDEN, OGREENROOF, OSOLAR_PANEL,                 &
@@ -1311,3 +1313,5 @@ END SUBROUTINE TEB_GARDEN3
 !
 !
 END SUBROUTINE TEB_GARDEN
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_GREENROOF 
+CONTAINS
 !     #########
     SUBROUTINE GREENROOF (DTCO, DTI, IG, I, TG, T, TOP, TVG, DTGD, TIR, GRM,  &
                           HIMPLICIT_WIND, TPTIME, PTSUN, PPEW_A_COEF, PPEW_B_COEF,    &
@@ -624,3 +626,5 @@ IF (LHOOK) CALL DR_HOOK('GREENROOF',1,ZHOOK_HANDLE)
 !
 !
 END SUBROUTINE GREENROOF
+END MODULE
+

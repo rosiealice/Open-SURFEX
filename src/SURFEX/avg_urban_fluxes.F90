@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_AVG_URBAN_FLUXES
+CONTAINS
 !     #########
     SUBROUTINE AVG_URBAN_FLUXES(                                                &
                        PTS_TOWN, PEMIS_TOWN,                                    &
@@ -463,3 +465,5 @@ IF (LHOOK) CALL DR_HOOK('AVG_URBAN_FLUXES',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE AVG_URBAN_FLUXES
+END MODULE
+

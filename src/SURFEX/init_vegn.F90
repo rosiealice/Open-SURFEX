@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INIT_VEG_n
+CONTAINS
 !#############################################################
 SUBROUTINE INIT_VEG_n(KPATCH, KI, OCANOPY, HROUGH, OAGRI_TO_GRASS, TPSNOW, &
                          HPHOTO, OIMP_VEG, OIMP_Z0, OIMP_EMIS,  &
@@ -221,3 +223,5 @@ PTSRAD   = XUNDEF
 IF (LHOOK) CALL DR_HOOK('INIT_VEG_n',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE INIT_VEG_n
+END MODULE
+

@@ -2,6 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_WINDOW_E_BUDGET
+CONTAINS
+! #########################################################################################
 SUBROUTINE WINDOW_E_BUDGET(PU_WIN, PEMIS_WIN, PF_WIN_FLOOR, PF_WIN_WALL, PF_WIN_MASS, &
                            PLW_W_TO_WIN, PLW_R_TO_WIN, PLW_G_TO_WIN,                  &
                            PLW_NR_TO_WIN, PLW_S_TO_WIN, PRAD_ROOF_WIN, PRAD_WALL_WIN, &
@@ -178,3 +181,5 @@ PRAD_WIN_MASS(:)  = PRADHT_IN(:)   * (PT_WIN2(:) - PTS_MASS(:))
 PCONV_WIN_BLD(:)  = ZCHTC_IN_WIN(:) * (PT_WIN2(:) - PTI_BLD(:))
 !
 END SUBROUTINE WINDOW_E_BUDGET
+END MODULE
+

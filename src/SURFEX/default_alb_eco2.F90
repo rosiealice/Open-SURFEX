@@ -2,13 +2,14 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DEFAULT_ALB_SOIL_ECO2
+CONTAINS
+!
+SUBROUTINE DEFAULT_ALB_SOIL_ECO2
 !
 !------------------------------------------------------------------------------
 !Soil albedo (the same for all 19 vegtypes)
 !------------------------------------------------------------------------------
-!
-SUBROUTINE DEFAULT_ALB_SOIL_ECO2
-!
 USE MODD_SURF_PAR
 USE MODD_DATA_COVER_PAR
 USE MODD_DATA_COVER
@@ -36812,3 +36813,5 @@ XDATA_ALB_VEG_VIS(301:573, 36,19) = (/          &
 IF (LHOOK) CALL DR_HOOK('DEFAULT_ALB_VEG_ECO2_19',1,ZHOOK_HANDLE) 
 !
 END SUBROUTINE DEFAULT_ALB_VEG_ECO2_19
+END MODULE
+

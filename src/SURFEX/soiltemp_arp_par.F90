@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SOILTEMP_ARP_PAR 
+CONTAINS
 !     #########
       SUBROUTINE SOILTEMP_ARP_PAR (I, &
                                    HPROGRAM,OTEMP_ARP,KTEMPLAYER_ARP)
@@ -180,3 +182,5 @@ IF (LHOOK) CALL DR_HOOK('SOILTEMP_ARP_PAR',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE SOILTEMP_ARP_PAR
+END MODULE
+

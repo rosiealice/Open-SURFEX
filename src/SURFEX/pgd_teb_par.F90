@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PGD_TEB_PAR 
+CONTAINS
 !     #########
       SUBROUTINE PGD_TEB_PAR (DTCO, DGU, UG, U, USS, BDD, DTT, DTI, TG, &
                               HPROGRAM,OGARDEN,OGREENROOF,HBLD_ATYPE)
@@ -878,3 +880,5 @@ END SUBROUTINE COHERENCE_THERMAL_DATA
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE PGD_TEB_PAR
+END MODULE
+

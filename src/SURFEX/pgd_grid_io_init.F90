@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_PGD_GRID_IO_INIT
+CONTAINS
 !     #########
       SUBROUTINE PGD_GRID_IO_INIT(HPROGRAM)
 !     ######################################
@@ -70,3 +72,5 @@ IF (LHOOK) CALL DR_HOOK('PGD_GRID_IO_INIT',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE PGD_GRID_IO_INIT
+END MODULE
+

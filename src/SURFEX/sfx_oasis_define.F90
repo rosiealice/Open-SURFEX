@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SFX_OASIS_DEFINE 
+CONTAINS
 !#########
 SUBROUTINE SFX_OASIS_DEFINE (I, U, &
                              HPROGRAM,KNPTS,KPARAL)
@@ -385,3 +387,5 @@ IF (LHOOK) CALL DR_HOOK('SFX_OASIS_DEFINE',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE SFX_OASIS_DEFINE
+END MODULE
+

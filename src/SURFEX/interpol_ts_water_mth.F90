@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INTERPOL_TS_WATER_MTH 
+CONTAINS
 !     #########
       SUBROUTINE INTERPOL_TS_WATER_MTH (W, &
                                         KYEAR,KMONTH,KDAY,PTS)
@@ -134,3 +136,5 @@ IF (LHOOK) CALL DR_HOOK('INTERPOL_TS_WATER_MTH',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE INTERPOL_TS_WATER_MTH
+END MODULE
+

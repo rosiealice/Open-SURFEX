@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_BILIN 
+CONTAINS
 !     #########
      SUBROUTINE BILIN (KLUOUT,PX1,PY1,PFIELD1,PX2,PY2,PFIELD2,OINTERP)
 !     #########################################################################
@@ -429,3 +431,5 @@ IF (LHOOK) CALL DR_HOOK('BILIN_4',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE BILIN
+END MODULE
+

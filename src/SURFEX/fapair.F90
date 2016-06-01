@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_FAPAIR
+CONTAINS
 !     ######
 SUBROUTINE FAPAIR(PABC, PFD_SKY, PIA, PLAI, PXMUS, PSSA_SUP, PSSA_INF, &
            PB_SUP, PB_INF, PALB_VEG, PALB_SOIL, OSHADE,            &
@@ -259,3 +261,5 @@ IF (PRESENT(PFRAC_SUN))     PFRAC_SUN     = ZFRAC_SUN
 IF (LHOOK) CALL DR_HOOK('FAPAIR',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE FAPAIR
+END MODULE
+

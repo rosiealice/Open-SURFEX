@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_INI_VAR_FROM_VEGTYPE_DATA 
+CONTAINS
 !     #########
       SUBROUTINE INI_VAR_FROM_VEGTYPE_DATA (DTCO, DTI, UG, U, &
                                             HPROGRAM,ILUOUT,HNAME,PFIELD,PDEF)
@@ -126,3 +128,5 @@ IF (LHOOK) CALL DR_HOOK('INI_VAR_FROM_VEGTYPE_DATA',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE INI_VAR_FROM_VEGTYPE_DATA
+END MODULE
+

@@ -2,8 +2,9 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_CCETR_PAIR
+CONTAINS
 !     ######
-!
    SUBROUTINE CCETR_PAIR(KNIV, PABC, PABC_SUP, PIA, PXMUS, PB_DR, POMEGA_DR,&
                         POMEGA_DF, PB_DF, PLAI, PALB_VEG, PALB_SOIL,        &
                         PFD_SKY, PFD_VEG, PTR, PXIA, PLAI_EFF               )
@@ -155,3 +156,5 @@ IF (LHOOK) CALL DR_HOOK('CCETR_PAIR',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE CCETR_PAIR
  
+END MODULE
+

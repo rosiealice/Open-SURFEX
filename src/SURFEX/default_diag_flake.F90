@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_DEFAULT_DIAG_FLAKE
+CONTAINS
 !     #########
       SUBROUTINE DEFAULT_DIAG_FLAKE(K2M,OSURF_BUDGET,O2M_MIN_ZS,ORAD_BUDGET,OCOEF,OSURF_VARS,&
                                      OWATER_PROFILE,OSURF_BUDGETC,ORESET_BUDGETC,PDIAG_TSTEP,&
@@ -102,3 +104,5 @@ IF (LHOOK) CALL DR_HOOK('DEFAULT_DIAG_FLAKE',1,ZHOOK_HANDLE)
 !-------------------------------------------------------------------------------
 !
 END SUBROUTINE DEFAULT_DIAG_FLAKE
+END MODULE
+

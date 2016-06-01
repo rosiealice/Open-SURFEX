@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_WRITESURF_GR_SNOW 
+CONTAINS
 !     #########
       SUBROUTINE WRITESURF_GR_SNOW (DGU, U, &
                                     HPROGRAM,HSURFTYPE,HPREFIX,TPSNOW  )
@@ -283,3 +285,5 @@ END IF
 IF (LHOOK) CALL DR_HOOK('WRITESURF_GR_SNOW',1,ZHOOK_HANDLE)
 !
 END SUBROUTINE WRITESURF_GR_SNOW
+END MODULE
+

@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_HOR_INTERPOL_GAUSS
+CONTAINS
 !     #########
 SUBROUTINE HOR_INTERPOL_GAUSS(KLUOUT,PFIELDIN,PFIELDOUT)
 !     #################################################################################
@@ -253,3 +255,5 @@ IF (LHOOK) CALL DR_HOOK('ARPEGE_STRETCH_A',1,ZHOOK_HANDLE)
 END SUBROUTINE ARPEGE_STRETCH_A
 !-------------------------------------------------------------------------------
 END SUBROUTINE HOR_INTERPOL_GAUSS
+END MODULE
+

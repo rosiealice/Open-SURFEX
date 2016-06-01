@@ -2,6 +2,8 @@
 !SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
 !SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
 !SFX_LIC for details. version 1.
+MODULE MODI_SURFACE_CDCH_1DARP 
+CONTAINS
 !     #########
 SUBROUTINE SURFACE_CDCH_1DARP (PZREF, PZ0EFF, PZ0H, PVMOD, PTA, PTG, &
                                  PQA, PQS, PCD, PCDN, PCH              )    
@@ -224,3 +226,5 @@ ENDDO
 IF (LHOOK) CALL DR_HOOK('SURFACE_CDCH_1DARP',1,ZHOOK_HANDLE)
 
 END SUBROUTINE SURFACE_CDCH_1DARP
+END MODULE
+
