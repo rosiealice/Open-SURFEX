@@ -1,0 +1,101 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+!     #########
+  SUBROUTINE OL_FIND_FILE_WRITE(HNAME,IFILE_ID)
+!     ###############################
+!
+!!****  *OL_FIND_FILE
+!!
+!!    PURPOSE
+!!    -------
+!!
+!!**  METHOD
+!!    ------
+!!
+!!    EXTERNAL
+!!    --------
+!!
+!!
+!!    IMPLICIT ARGUMENTS
+!!    ------------------
+!!
+!!    REFERENCE
+!!    ---------
+!!
+!!
+!!    AUTHOR
+!!    ------
+!!      F. Habets   *Meteo France*
+!!
+!!    MODIFICATIONS
+!!    -------------
+!!      Original    07-03
+!-------------------------------------------------------------------------------
+!
+!*       0.    DECLARATIONS
+!              ------------
+
+USE MODD_OL_FILEID, ONLY : XVAR_SURF, XVAR_NATURE, XVAR_SEA, XVAR_WATER, XVAR_TOWN, &
+                             XID_SURF, XID_NATURE, XID_SEA, XID_WATER, XID_TOWN  
+
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+INCLUDE "netcdf.inc"
+
+
+! 
+ CHARACTER(LEN=*),   INTENT(IN) :: HNAME
+INTEGER,            INTENT(OUT):: IFILE_ID
+ CHARACTER(LEN=100)             :: HNAME_PAS
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+
+!******************************************
+IF (LHOOK) CALL DR_HOOK('OL_FIND_FILE_WRITE',0,ZHOOK_HANDLE)
+HNAME_PAS=HNAME(:LEN_TRIM(HNAME))
+
+IFILE_ID=0
+
+IF (ASSOCIATED(XVAR_SURF)) CALL SEARCH_VAR(XVAR_SURF,XID_SURF,HNAME_PAS,IFILE_ID)
+IF (IFILE_ID==0 .AND. ASSOCIATED(XVAR_NATURE)) CALL SEARCH_VAR(XVAR_NATURE,XID_NATURE,HNAME_PAS,IFILE_ID) 
+IF (IFILE_ID==0 .AND. ASSOCIATED(XVAR_SEA)) CALL SEARCH_VAR(XVAR_SEA,XID_SEA,HNAME_PAS,IFILE_ID) 
+IF (IFILE_ID==0 .AND. ASSOCIATED(XVAR_WATER)) CALL SEARCH_VAR(XVAR_WATER,XID_WATER,HNAME_PAS,IFILE_ID)
+IF (IFILE_ID==0 .AND. ASSOCIATED(XVAR_TOWN)) CALL SEARCH_VAR(XVAR_TOWN,XID_TOWN,HNAME_PAS,IFILE_ID)
+
+!------------------------------------------------
+
+IF (LHOOK) CALL DR_HOOK('OL_FIND_FILE_WRITE',1,ZHOOK_HANDLE)
+ CONTAINS
+
+!------------------------------------------------
+
+SUBROUTINE SEARCH_VAR(HVAR,NVAR,HNAM,IFILEID)
+
+IMPLICIT NONE
+
+ CHARACTER(LEN=20),DIMENSION(:), INTENT(IN):: HVAR
+INTEGER, DIMENSION(:), INTENT(IN):: NVAR
+ CHARACTER(LEN=*), INTENT(IN) :: HNAM
+INTEGER, INTENT(OUT)  :: IFILEID
+INTEGER :: JVAR
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+
+IF (LHOOK) CALL DR_HOOK('SEARCH_VAR',0,ZHOOK_HANDLE)
+IFILEID=0
+
+DO JVAR=1,SIZE(HVAR)
+  IF (HNAM==TRIM(HVAR(JVAR))) THEN
+    IFILEID=NVAR(JVAR)
+    EXIT
+  ENDIF
+ENDDO
+IF (LHOOK) CALL DR_HOOK('SEARCH_VAR',1,ZHOOK_HANDLE)
+
+END SUBROUTINE SEARCH_VAR
+
+!------------------------------------------------
+END SUBROUTINE OL_FIND_FILE_WRITE

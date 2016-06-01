@@ -1,0 +1,1207 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+!     #########
+      SUBROUTINE CONVERT_PATCH_ISBA (DTCO, DTI, I, &
+                                     HISBA,KDECADE,KDECADE2,PCOVER,OCOVER,&
+                                  HPHOTO,OAGRIP,OPERM,OTR_ML,HSFTYPE,    &
+                                  PVEG,PLAI,PRSMIN,PGAMMA,PWRMAX_CF,     &
+                                  PRGL,PCV,PSOILGRID,PDG,KWG_LAYER,      &
+                                  PDROOT,PDG2,PZ0,PZ0_O_Z0H,             &
+                                  PALBNIR_VEG,PALBVIS_VEG,PALBUV_VEG,    &
+                                  PEMIS_ECO,PVEGTYPE,PROOTFRAC,          &
+                                  PGMES,PBSLAI,PLAIMIN,PSEFOLD,PGC,      &
+                                  PDMAX, PF2I, OSTRESS, PH_TREE, PRE25,  &
+                                  PCE_NITRO, PCF_NITRO, PCNA_NITRO,      &
+                                  PD_ICE, PWG1,                          &
+                                  PALBNIR_SOIL,PALBVIS_SOIL,PALBUV_SOIL, &
+                                  TPSEED, TPREAP, PWATSUP, PIRRIG,       &
+                                  PGNDLITTER, PRGLGV,                    &
+                                  PGAMMAGV, PRSMINGV, PROOTFRACGV,       &
+                                  PWRMAX_CFGV, PLAIGV, PZ0LITTER, PH_VEG )
+!     ##############################################################
+!
+!!**** *CONVERT_PATCH_ISBA* 
+!!
+!!    PURPOSE
+!!    -------
+!!
+!!    METHOD
+!!    ------
+!!   
+!
+!!    EXTERNAL
+!!    --------
+!!
+!!    IMPLICIT ARGUMENTS
+!!    ------------------
+!!
+!!    REFERENCE
+!!    ---------
+!!
+!!    AUTHOR
+!!    ------
+!!
+!!    S. Faroux        Meteo-France
+!!
+!!    MODIFICATION
+!!    ------------
+!!
+!!    Original    16/11/10
+!!      V. Masson    04/14 Garden and Greenroofs can only be initialized by ecoclimap 
+!!                         in this routine (not from user specified parameters from
+!!                         the nature tile, as the number of points is not the same)
+!!    B. Decharme  04/2013  Add CDGAVG (method to average depth)
+!!                          Soil depth = Root depth with ISBA-DF
+!!                           except for bare soil pft (but limited to 1m)
+!!                          With TR_ML (new radiative transfert) and modis
+!!                           albedo, UV albedo not defined (conserv nrj when
+!!                           coupled to atmosphere)
+!!    P Samuelsson  10/2014  MEB
+!!
+!----------------------------------------------------------------------------
+!
+!*    0.     DECLARATION
+!            -----------
+!
+!
+USE MODD_DATA_COVER_n, ONLY : DATA_COVER_t
+USE MODD_DATA_ISBA_n, ONLY : DATA_ISBA_t
+USE MODD_ISBA_n, ONLY : ISBA_t
+!
+USE MODD_DATA_COVER_PAR, ONLY : NVEGTYPE, NVT_NO, NVT_ROCK, NVT_SNOW
+!
+USE MODD_TYPE_DATE_SURF
+!
+!
+USE MODD_DATA_COVER,     ONLY : XDATA_LAI, XDATA_H_TREE,                &
+                                XDATA_VEG, XDATA_Z0, XDATA_Z0_O_Z0H,    &
+                                XDATA_EMIS_ECO, XDATA_GAMMA, XDATA_CV,  &
+                                XDATA_RGL, XDATA_RSMIN,                 &
+                                XDATA_ALBNIR_VEG, XDATA_ALBVIS_VEG,     &
+                                XDATA_ALBUV_VEG,                        &
+                                XDATA_ALB_VEG_NIR, XDATA_ALB_VEG_VIS,   &
+                                XDATA_ALB_SOIL_NIR, XDATA_ALB_SOIL_VIS, &
+                                XDATA_GMES, XDATA_BSLAI, XDATA_LAIMIN,  &
+                                XDATA_SEFOLD, XDATA_GC, XDATA_WRMAX_CF, &
+                                XDATA_STRESS,                           &
+                                XDATA_DMAX, XDATA_F2I, XDATA_RE25,      &
+                                XDATA_CE_NITRO, XDATA_CF_NITRO,         &
+                                XDATA_CNA_NITRO, XDATA_DICE,            &
+                                XDATA_GMES_ST, XDATA_BSLAI_ST,          &
+                                XDATA_SEFOLD_ST, XDATA_GC_ST,           &
+                                XDATA_DMAX_ST, XDATA_WATSUP,            &
+                                XDATA_GNDLITTER,                        &
+                                XDATA_RGLGV, XDATA_GAMMAGV,             &
+                                XDATA_RSMINGV, XDATA_ROOT_DEPTHGV,      &
+                                XDATA_WRMAX_CFGV, XDATA_LAIGV,          &
+                                XDATA_Z0LITTER, XDATA_H_VEG,            &
+                                XDATA_ROOT_EXTINCTIONGV,                &
+                                TDATA_SEED, TDATA_REAP,XDATA_IRRIG,     &
+                                XDATA_ROOT_DEPTH, XDATA_GROUND_DEPTH,   &
+                                XDATA_ROOT_EXTINCTION, XDATA_ROOT_LIN
+!   
+!
+USE MODD_TREEDRAG,       ONLY : LTREEDRAG
+!
+USE MODI_AV_PGD_PARAM
+USE MODI_AV_PGD
+USE MODI_SOIL_ALBEDO
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+!*    0.1    Declaration of arguments
+!            ------------------------
+!
+!
+TYPE(DATA_COVER_t), INTENT(INOUT) :: DTCO
+TYPE(DATA_ISBA_t), INTENT(INOUT) :: DTI
+TYPE(ISBA_t), INTENT(INOUT) :: I
+!
+ CHARACTER(LEN=*),       INTENT(IN)    :: HISBA   ! type of soil (Force-Restore OR Diffusion)
+INTEGER,                INTENT(IN)    :: KDECADE
+INTEGER,                INTENT(IN)    :: KDECADE2
+REAL, DIMENSION(:,:),   INTENT(IN)    :: PCOVER
+LOGICAL, DIMENSION(:),  INTENT(IN)    :: OCOVER
+ CHARACTER(LEN=*),       INTENT(IN)    :: HPHOTO  ! type of photosynthesis
+LOGICAL,                INTENT(IN)    :: OAGRIP
+LOGICAL,                INTENT(IN)    :: OPERM
+LOGICAL,                INTENT(IN)    :: OTR_ML
+ CHARACTER(LEN=*),       INTENT(IN)    :: HSFTYPE ! nature / garden
+!
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(IN)   :: PWG1
+!
+REAL, DIMENSION(:)  ,   OPTIONAL, INTENT(IN)    :: PSOILGRID
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PVEG
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PLAI
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PRSMIN
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PGAMMA
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PWRMAX_CF
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PRGL
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PCV
+REAL, DIMENSION(:,:,:), OPTIONAL, INTENT(OUT)   :: PDG
+INTEGER, DIMENSION(:,:),OPTIONAL, INTENT(OUT)   :: KWG_LAYER
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PDROOT
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PDG2
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PZ0
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PZ0_O_Z0H
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PALBNIR_VEG
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PALBVIS_VEG
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PALBUV_VEG
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PEMIS_ECO
+!
+REAL, DIMENSION(:,:), OPTIONAL, INTENT(OUT)   :: PVEGTYPE
+REAL, DIMENSION(:,:,:), OPTIONAL, INTENT(OUT)   :: PROOTFRAC
+!
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PGMES
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PBSLAI
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PLAIMIN
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PSEFOLD
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PGC
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PDMAX
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PF2I
+LOGICAL, DIMENSION(:,:),OPTIONAL, INTENT(OUT)   :: OSTRESS
+!
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PH_TREE
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PRE25
+!
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PCE_NITRO
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PCF_NITRO
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PCNA_NITRO
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PD_ICE
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PALBNIR_SOIL
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PALBVIS_SOIL
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PALBUV_SOIL
+!
+TYPE(DATE_TIME), DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: TPSEED
+TYPE(DATE_TIME), DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: TPREAP
+!
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PWATSUP
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PIRRIG
+!
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PGNDLITTER
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PRGLGV
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PGAMMAGV
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PRSMINGV
+REAL, DIMENSION(:,:,:),   OPTIONAL, INTENT(OUT)   :: PROOTFRACGV
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PWRMAX_CFGV
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PLAIGV
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PZ0LITTER
+REAL, DIMENSION(:,:),   OPTIONAL, INTENT(OUT)   :: PH_VEG
+!
+!*    0.2    Declaration of local variables
+!            ------------------------------
+!
+ CHARACTER(LEN=3)  :: YTREE, YNAT, YLAI, YVEG, YBAR, YDIF
+!
+INTEGER               :: JLAYER    ! loop counter on layers
+INTEGER               :: JVEGTYPE  ! loop counter on vegtypes
+!
+LOGICAL               :: GDATA     ! Flag where initialization can be done
+!                                  ! either with ecoclimap of data fields specified
+!                                  ! by user on the natural points (GDTA=T)
+!                                  ! For fields in town, only ecoclimap option
+!                                  ! is treated in this routine (GDATA=F)
+INTEGER               :: JJ        ! loop counter
+!
+INTEGER               :: ISIZE_LMEB_PATCH  ! Number of patches with MEB=true
+!
+REAL, ALLOCATABLE, DIMENSION(:) :: ZH_VEG
+!
+!
+!*    0.3    Declaration of namelists
+!            ------------------------
+!
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!-------------------------------------------------------------------------------
+!
+!*    1.      Initializations
+!             ---------------
+!
+IF (LHOOK) CALL DR_HOOK('CONVERT_PATCH_ISBA',0,ZHOOK_HANDLE)
+!
+IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)
+!
+IF (HSFTYPE=='NAT') THEN
+  YNAT='NAT'
+  YTREE='TRE'
+  YLAI='LAI'
+  YVEG='VEG'
+  YBAR='BAR'
+  YDIF='DVG'
+  GDATA=.TRUE.
+  ISIZE_LMEB_PATCH = COUNT(I%LMEB_PATCH(:))
+ELSEIF (HSFTYPE=='GRD') THEN
+  YNAT='GRD'
+  YTREE='GRT'
+  YLAI='GRL'
+  YVEG='GRV'
+  YBAR='GRB'
+  YDIF='GDV'
+  GDATA=.FALSE.
+  ISIZE_LMEB_PATCH = 0
+ENDIF
+!
+! vegtypes fraction
+! -----------------
+!
+IF (PRESENT(PVEGTYPE)) THEN
+  IF (GDATA .AND. DTI%LDATA_VEGTYPE) THEN
+    PVEGTYPE=DTI%XPAR_VEGTYPE
+  ELSE
+    !classical ecoclimap case
+    DO JVEGTYPE=1,NVEGTYPE
+      CALL AV_PGD(DTCO, &
+                   PVEGTYPE(:,JVEGTYPE),PCOVER ,DTCO%XDATA_VEGTYPE(:,JVEGTYPE),YNAT,'ARI',OCOVER)
+    END DO
+  ENDIF
+ENDIF
+!
+!   VEG
+!   ----
+IF (PRESENT(PVEG)) THEN
+  IF (GDATA .AND. DTI%LDATA_VEG) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PVEG,DTI%XPAR_VEGTYPE,DTI%XPAR_VEG(:,KDECADE2,:),YNAT,'ARI')
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PVEG,PCOVER,XDATA_VEG(:,KDECADE,:),YNAT,'ARI',OCOVER,KDECADE=KDECADE)
+  ENDIF
+ENDIF
+!
+!   GNDLITTER
+!   ---------
+IF (PRESENT(PGNDLITTER)) THEN
+  IF (GDATA .AND. DTI%LDATA_GNDLITTER) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PGNDLITTER,DTI%XPAR_VEGTYPE,DTI%XPAR_GNDLITTER(:,KDECADE2,:),YNAT,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PGNDLITTER,PCOVER,XDATA_GNDLITTER(:,KDECADE,:),YNAT,'ARI',OCOVER,KDECADE=KDECADE)
+  ENDIF
+ENDIF
+!
+!   LAI
+!   ----
+IF (PRESENT(PLAI)) THEN
+  IF (GDATA .AND. DTI%LDATA_LAI) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PLAI,DTI%XPAR_VEGTYPE,DTI%XPAR_LAI(:,KDECADE2,:),YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PLAI,PCOVER,XDATA_LAI(:,KDECADE,:),YVEG,'ARI',OCOVER,KDECADE=KDECADE)
+  ENDIF
+ENDIF
+!
+!   LAIGV
+!   ----
+IF (PRESENT(PLAIGV)) THEN
+  IF (GDATA .AND. DTI%LDATA_LAIGV) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PLAIGV,DTI%XPAR_VEGTYPE,DTI%XPAR_LAIGV(:,KDECADE2,:),YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PLAIGV,PCOVER,XDATA_LAIGV(:,KDECADE,:),YVEG,'ARI',OCOVER,KDECADE=KDECADE)
+  ENDIF
+ENDIF
+!
+!           EMIS
+!           ----
+!emis needs VEG by vegtypes is changed at this step
+IF (PRESENT(PEMIS_ECO)) THEN    
+  IF (GDATA .AND. DTI%LDATA_EMIS) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PEMIS_ECO,DTI%XPAR_VEGTYPE,DTI%XPAR_EMIS(:,KDECADE2,:),YNAT,'ARI')
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PEMIS_ECO ,PCOVER ,XDATA_EMIS_ECO (:,KDECADE,:),YNAT,'ARI',OCOVER,KDECADE=KDECADE)
+  ENDIF
+ENDIF
+!        H_VEG
+!        -----
+IF (PRESENT(PH_VEG)) THEN
+  IF (GDATA .AND. DTI%LDATA_H_VEG) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PH_VEG,DTI%XPAR_VEGTYPE,DTI%XPAR_H_VEG(:,KDECADE2,:),YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PH_VEG,PCOVER,XDATA_H_VEG(:,KDECADE,:),YVEG,'ARI',OCOVER,KDECADE=KDECADE)
+  ENDIF
+! In case of MEB, force 0<PH_VEG<XUNDEF for those patches where LMEB_PATCH=.T.
+  IF (ISIZE_LMEB_PATCH>0)THEN
+    ALLOCATE(ZH_VEG(SIZE(PH_VEG,1)))
+    DO JJ=1,SIZE(I%LMEB_PATCH)
+      IF(I%LMEB_PATCH(JJ))THEN
+        ZH_VEG=PH_VEG(:,JJ)
+        WHERE(ZH_VEG>1000.) ZH_VEG=0.
+        ZH_VEG=MAX(ZH_VEG,1.0E-3)
+        PH_VEG(:,JJ)=ZH_VEG
+      ENDIF
+    ENDDO
+  ENDIF
+ENDIF
+!
+!
+!    Z0V
+!    ----
+IF (PRESENT(PZ0)) THEN
+  IF (GDATA .AND. DTI%LDATA_Z0) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PZ0,DTI%XPAR_VEGTYPE,DTI%XPAR_Z0(:,KDECADE2,:),YNAT,'CDN')
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PZ0 ,PCOVER ,XDATA_Z0 (:,KDECADE,:),YNAT,'CDN',OCOVER,KDECADE=KDECADE)
+  ENDIF
+ENDIF
+!
+!    Z0LITTER
+!    --------
+IF (PRESENT(PZ0LITTER)) THEN
+  IF (GDATA .AND. DTI%LDATA_Z0LITTER) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PZ0LITTER,DTI%XPAR_VEGTYPE,DTI%XPAR_Z0LITTER(:,KDECADE2,:),YNAT,'CDN')
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PZ0LITTER ,PCOVER ,XDATA_Z0LITTER (:,KDECADE,:),YNAT,'CDN',OCOVER)
+  ENDIF
+ENDIF
+!
+!
+!* soil layers and root fraction
+!  -----------------------------
+!
+IF ( PRESENT(PDG)) THEN
+  !
+  !   compute soil layers (and root fraction if DIF)
+  !
+  CALL SET_GRID_PARAM(SIZE(PDG,1),SIZE(PDG,2),SIZE(PDG,3),PRESENT(PDG2),     &
+                      PRESENT(PDROOT),PRESENT(KWG_LAYER),PRESENT(PROOTFRAC), &
+                      PRESENT(PROOTFRACGV).AND.(ISIZE_LMEB_PATCH>0)          )
+  !    
+ENDIF
+!
+!        D ICE
+!        -----
+!
+IF (PRESENT(PD_ICE).AND.HISBA/='DIF') THEN
+  IF (GDATA .AND. DTI%LDATA_DICE) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PD_ICE,DTI%XPAR_VEGTYPE,DTI%XPAR_DICE,YNAT,'ARI')
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PD_ICE,PCOVER,XDATA_DICE(:,:),YNAT,'ARI',OCOVER,KDECADE=KDECADE)
+  ENDIF
+ENDIF
+!
+!        Other parameters
+!        ----------------
+IF (PRESENT(PRSMIN)) THEN
+  IF( SIZE(PRSMIN)>0) THEN
+    IF (GDATA .AND. DTI%LDATA_RSMIN) THEN
+      CALL AV_PGD_PARAM(DTI, &
+                      PRSMIN,DTI%XPAR_VEGTYPE,DTI%XPAR_RSMIN,YLAI,'INV',KDECADE=KDECADE2)
+    ELSE
+      CALL AV_PGD(DTCO, &
+                   PRSMIN,PCOVER,XDATA_RSMIN,YLAI,'INV',OCOVER,KDECADE=KDECADE)  
+    ENDIF
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PRSMINGV)) THEN
+  IF( SIZE(PRSMINGV)>0) THEN
+    IF (GDATA .AND. DTI%LDATA_RSMINGV) THEN
+      CALL AV_PGD_PARAM(DTI, &
+                      PRSMINGV,DTI%XPAR_VEGTYPE,DTI%XPAR_RSMINGV,YLAI,'INV',KDECADE=KDECADE2)
+    ELSE
+      CALL AV_PGD(DTCO, &
+                   PRSMINGV,PCOVER,XDATA_RSMINGV,YLAI,'INV',OCOVER,KDECADE=KDECADE)  
+    ENDIF
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PGAMMA)) THEN
+  IF (GDATA .AND. DTI%LDATA_GAMMA) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PGAMMA,DTI%XPAR_VEGTYPE,DTI%XPAR_GAMMA,YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PGAMMA,PCOVER,XDATA_GAMMA,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PGAMMAGV)) THEN
+  IF (GDATA .AND. DTI%LDATA_GAMMAGV) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PGAMMAGV,DTI%XPAR_VEGTYPE,DTI%XPAR_GAMMAGV,YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PGAMMAGV,PCOVER,XDATA_GAMMAGV,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PWRMAX_CF)) THEN
+  IF (GDATA .AND. DTI%LDATA_WRMAX_CF) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PWRMAX_CF,DTI%XPAR_VEGTYPE,DTI%XPAR_WRMAX_CF,YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PWRMAX_CF,PCOVER,XDATA_WRMAX_CF,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PWRMAX_CFGV)) THEN
+  IF (GDATA .AND. DTI%LDATA_WRMAX_CFGV) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PWRMAX_CFGV,DTI%XPAR_VEGTYPE,DTI%XPAR_WRMAX_CFGV,YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PWRMAX_CFGV,PCOVER,XDATA_WRMAX_CFGV,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PRGL)) THEN
+  IF (GDATA .AND. DTI%LDATA_RGL) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PRGL,DTI%XPAR_VEGTYPE,DTI%XPAR_RGL,YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PRGL,PCOVER,XDATA_RGL,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PRGLGV)) THEN
+  IF (GDATA .AND. DTI%LDATA_RGLGV) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PRGLGV,DTI%XPAR_VEGTYPE,DTI%XPAR_RGLGV,YVEG,'ARI',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PRGLGV,PCOVER,XDATA_RGLGV,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PCV)) THEN
+  IF (GDATA .AND. DTI%LDATA_CV) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PCV,DTI%XPAR_VEGTYPE,DTI%XPAR_CV,YVEG,'INV',KDECADE=KDECADE2)
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PCV,PCOVER,XDATA_CV,YVEG,'INV',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+
+IF (PRESENT(PZ0_O_Z0H)) THEN
+  IF (GDATA .AND. DTI%LDATA_Z0_O_Z0H) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PZ0_O_Z0H,DTI%XPAR_VEGTYPE,DTI%XPAR_Z0_O_Z0H,YNAT,'ARI')
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PZ0_O_Z0H,PCOVER,XDATA_Z0_O_Z0H,YNAT,'ARI',OCOVER,KDECADE=KDECADE)
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PALBNIR_VEG)) THEN
+  IF (GDATA .AND. DTI%LDATA_ALBNIR_VEG) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PALBNIR_VEG,DTI%XPAR_VEGTYPE,DTI%XPAR_ALBNIR_VEG,YVEG,'ARI',KDECADE=KDECADE2)
+  ELSEIF (I%CALBEDO=='CM13') THEN
+    CALL AV_PGD(DTCO, &
+                   PALBNIR_VEG,PCOVER,XDATA_ALB_VEG_NIR(:,KDECADE,:),YVEG,'ARI',&
+        OCOVER,KDECADE=KDECADE)    
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PALBNIR_VEG,PCOVER,XDATA_ALBNIR_VEG,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PALBVIS_VEG)) THEN
+  IF (GDATA .AND. DTI%LDATA_ALBVIS_VEG) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PALBVIS_VEG,DTI%XPAR_VEGTYPE,DTI%XPAR_ALBVIS_VEG,YVEG,'ARI',KDECADE=KDECADE2)
+  ELSEIF (I%CALBEDO=='CM13') THEN
+    CALL AV_PGD(DTCO, &
+                   PALBVIS_VEG,PCOVER,XDATA_ALB_VEG_VIS(:,KDECADE,:),YVEG,'ARI',&
+        OCOVER,KDECADE=KDECADE)      
+  ELSE
+    CALL AV_PGD(DTCO, &
+                   PALBVIS_VEG,PCOVER,XDATA_ALBVIS_VEG,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PALBUV_VEG)) THEN
+  IF ((I%CALBEDO=='CM13'.OR.OTR_ML).AND.PRESENT(PALBVIS_VEG)) THEN
+    PALBUV_VEG(:,:)=PALBVIS_VEG(:,:)
+  ELSE
+    IF (GDATA .AND. DTI%LDATA_ALBUV_VEG) THEN
+      CALL AV_PGD_PARAM(DTI, &
+                      PALBUV_VEG,DTI%XPAR_VEGTYPE,DTI%XPAR_ALBUV_VEG,YVEG,'ARI',KDECADE=KDECADE2)
+    ELSE
+      CALL AV_PGD(DTCO, &
+                   PALBUV_VEG,PCOVER,XDATA_ALBUV_VEG,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+    ENDIF
+  ENDIF
+ENDIF
+!
+IF (ISIZE_LMEB_PATCH>0 .OR. HPHOTO/='NON') THEN
+
+  IF (PRESENT(PBSLAI)) THEN
+    IF( SIZE(PBSLAI)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_BSLAI) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PBSLAI,DTI%XPAR_VEGTYPE,DTI%XPAR_BSLAI,YVEG,'ARI',KDECADE=KDECADE2)
+      ELSE
+        IF (HPHOTO == 'AST' .OR. HPHOTO == 'LST' .OR. HPHOTO == 'NIT' .OR. HPHOTO == 'NCB') THEN
+          CALL AV_PGD(DTCO, &
+                   PBSLAI,PCOVER,XDATA_BSLAI_ST,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+        ELSE
+          CALL AV_PGD(DTCO, &
+                   PBSLAI,PCOVER,XDATA_BSLAI,YVEG,'ARI',OCOVER,KDECADE=KDECADE)
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+
+ENDIF
+!
+IF (HPHOTO/='NON'.OR.LTREEDRAG) THEN
+  !
+  IF (PRESENT(PH_TREE)) THEN
+    IF (GDATA .AND. DTI%LDATA_H_TREE) THEN
+      CALL AV_PGD_PARAM(DTI, &
+                      PH_TREE,DTI%XPAR_VEGTYPE,DTI%XPAR_H_TREE,YTREE,'ARI')
+    ELSE
+      CALL AV_PGD(DTCO, &
+                   PH_TREE,PCOVER,XDATA_H_TREE(:,:),YTREE,'ARI',OCOVER,KDECADE=KDECADE)
+    ENDIF
+  ENDIF
+  !
+ENDIF
+!
+IF (HPHOTO/='NON') THEN
+  IF (PRESENT(PRE25)) THEN
+    IF (SIZE(PRE25)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_RE25) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PRE25,DTI%XPAR_VEGTYPE,DTI%XPAR_RE25,YNAT,'ARI')      
+      ELSE
+        CALL AV_PGD(DTCO, &
+                   PRE25,PCOVER,XDATA_RE25,YNAT,'ARI',OCOVER,KDECADE=KDECADE)  
+      ENDIF
+    ENDIF
+  ENDIF
+  !
+  IF (PRESENT(PLAIMIN)) THEN
+    IF (SIZE(PLAIMIN)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_LAIMIN) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PLAIMIN,DTI%XPAR_VEGTYPE,DTI%XPAR_LAIMIN,YVEG,'ARI',KDECADE=KDECADE2)
+      ELSE
+        CALL AV_PGD(DTCO, &
+                   PLAIMIN,PCOVER,XDATA_LAIMIN,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+      ENDIF
+    ENDIF
+  ENDIF        
+  !
+  IF (PRESENT(PSEFOLD)) THEN
+    IF (SIZE(PSEFOLD)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_SEFOLD) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PSEFOLD,DTI%XPAR_VEGTYPE,DTI%XPAR_SEFOLD,YVEG,'ARI',KDECADE=KDECADE2)
+      ELSE
+        IF (HPHOTO == 'AST' .OR. HPHOTO == 'LST' .OR. HPHOTO == 'NIT' .OR. HPHOTO == 'NCB') THEN
+          CALL AV_PGD(DTCO, &
+                   PSEFOLD,PCOVER,XDATA_SEFOLD_ST,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+        ELSE
+          CALL AV_PGD(DTCO, &
+                   PSEFOLD,PCOVER,XDATA_SEFOLD,YVEG,'ARI',OCOVER,KDECADE=KDECADE)
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+  !
+  IF (PRESENT(PGMES)) THEN
+    IF ( SIZE(PGMES)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_GMES) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PGMES,DTI%XPAR_VEGTYPE,DTI%XPAR_GMES,YVEG,'ARI',KDECADE=KDECADE2)
+      ELSE
+        IF (HPHOTO == 'AST' .OR. HPHOTO == 'LST' .OR. HPHOTO == 'NIT' .OR. HPHOTO == 'NCB') THEN
+          CALL AV_PGD(DTCO, &
+                   PGMES,PCOVER,XDATA_GMES_ST,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+        ELSE
+          CALL AV_PGD(DTCO, &
+                   PGMES,PCOVER,XDATA_GMES,YVEG,'ARI',OCOVER,KDECADE=KDECADE)
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+  !
+  IF (PRESENT(PGC)) THEN
+    IF ( SIZE(PGC)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_GC) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PGC,DTI%XPAR_VEGTYPE,DTI%XPAR_GC,YVEG,'ARI',KDECADE=KDECADE2)
+      ELSE
+        IF (HPHOTO == 'AST' .OR. HPHOTO == 'LST' .OR. HPHOTO == 'NIT' .OR. HPHOTO == 'NCB') THEN
+          CALL AV_PGD(DTCO, &
+                   PGC,PCOVER,XDATA_GC_ST,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+        ELSE
+          CALL AV_PGD(DTCO, &
+                   PGC,PCOVER,XDATA_GC,YVEG,'ARI',OCOVER,KDECADE=KDECADE)
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+  !
+  IF (PRESENT(PDMAX)) THEN
+    IF (SIZE(PDMAX)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_DMAX) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PDMAX,DTI%XPAR_VEGTYPE,DTI%XPAR_DMAX,YTREE,'ARI')
+      ELSE
+        IF (HPHOTO == 'AST' .OR. HPHOTO == 'LST' .OR. HPHOTO == 'NIT' .OR. HPHOTO == 'NCB') THEN
+          CALL AV_PGD(DTCO, &
+                   PDMAX,PCOVER,XDATA_DMAX_ST,YTREE,'ARI',OCOVER,KDECADE=KDECADE)  
+        ELSE
+          CALL AV_PGD(DTCO, &
+                   PDMAX,PCOVER,XDATA_DMAX,YTREE,'ARI',OCOVER,KDECADE=KDECADE)
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+  !
+  IF (HPHOTO/='AGS' .AND. HPHOTO/='LAI') THEN
+    !
+    IF (PRESENT(PF2I)) THEN
+      IF (SIZE(PF2I)>0) THEN
+        IF (GDATA .AND. DTI%LDATA_F2I) THEN
+          CALL AV_PGD_PARAM(DTI, &
+                      PF2I,DTI%XPAR_VEGTYPE,DTI%XPAR_F2I,YVEG,'ARI',KDECADE=KDECADE2)
+        ELSE
+          CALL AV_PGD(DTCO, &
+                   PF2I,PCOVER,XDATA_F2I,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+        ENDIF
+      ENDIF
+    ENDIF
+    !
+    IF (HPHOTO=='NIT' .OR. HPHOTO=='NCB') THEN
+      !
+      IF (PRESENT(PCE_NITRO)) THEN
+        IF (SIZE(PCE_NITRO)>0) THEN
+          IF (GDATA .AND. DTI%LDATA_CE_NITRO) THEN
+            CALL AV_PGD_PARAM(DTI, &
+                      PCE_NITRO,DTI%XPAR_VEGTYPE,DTI%XPAR_CE_NITRO,YVEG,'ARI',KDECADE=KDECADE2)
+          ELSE
+            CALL AV_PGD(DTCO, &
+                   PCE_NITRO,PCOVER,XDATA_CE_NITRO,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+          ENDIF
+        ENDIF
+      ENDIF
+      !
+      IF (PRESENT(PCF_NITRO)) THEN
+        IF (SIZE(PCF_NITRO)>0) THEN
+          IF (GDATA .AND. DTI%LDATA_CF_NITRO) THEN
+            CALL AV_PGD_PARAM(DTI, &
+                      PCF_NITRO,DTI%XPAR_VEGTYPE,DTI%XPAR_CF_NITRO,YVEG,'ARI',KDECADE=KDECADE2)
+          ELSE
+            CALL AV_PGD(DTCO, &
+                   PCF_NITRO,PCOVER,XDATA_CF_NITRO,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+          ENDIF
+        ENDIF
+      ENDIF
+      !
+      IF (PRESENT(PCNA_NITRO)) THEN
+        IF (SIZE(PCNA_NITRO)>0) THEN
+          IF (GDATA .AND. DTI%LDATA_CNA_NITRO) THEN
+            CALL AV_PGD_PARAM(DTI, &
+                      PCNA_NITRO,DTI%XPAR_VEGTYPE,DTI%XPAR_CNA_NITRO,YVEG,'ARI',KDECADE=KDECADE2)
+          ELSE
+            CALL AV_PGD(DTCO, &
+                   PCNA_NITRO,PCOVER,XDATA_CNA_NITRO,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+          ENDIF
+        ENDIF
+      ENDIF
+      !
+    ENDIF
+  ENDIF
+  !
+ENDIF
+!
+IF ((HPHOTO == 'LAI' .OR. HPHOTO == 'LST' .OR. HPHOTO == 'NIT' .OR. HPHOTO=='NCB') .AND. OAGRIP)  THEN
+  !
+  ! date of seeding
+  ! ---------------
+  !
+  IF (PRESENT(TPSEED)) THEN
+     IF(SIZE(TPSEED)>0) THEN
+      CALL AV_PGD (TPSEED ,PCOVER,TDATA_SEED(:,:),YVEG,'MAJ',OCOVER,KDECADE=KDECADE)  
+     ENDIF
+  END IF
+  !
+  ! date of reaping
+  ! ---------------
+  !
+  IF (PRESENT(TPREAP)) THEN
+    IF (SIZE(TPREAP)>0) THEN
+      CALL AV_PGD (TPREAP ,PCOVER,TDATA_REAP(:,:),YVEG,'MAJ',OCOVER,KDECADE=KDECADE)  
+    ENDIF
+  END IF
+  !
+  IF (PRESENT(PIRRIG)) THEN 
+    IF (SIZE(PIRRIG)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_IRRIG) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PIRRIG,DTI%XPAR_VEGTYPE,DTI%XPAR_IRRIG(:,KDECADE2,:),YVEG,'ARI',KDECADE=KDECADE2)
+      ELSE
+        CALL AV_PGD(DTCO, &
+                   PIRRIG,PCOVER,XDATA_IRRIG,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+      ENDIF
+    ENDIF
+  ENDIF
+
+  IF (PRESENT(PWATSUP)) THEN  
+    IF (SIZE(PWATSUP)>0) THEN
+      IF (GDATA .AND. DTI%LDATA_WATSUP) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      PWATSUP,DTI%XPAR_VEGTYPE,DTI%XPAR_WATSUP(:,KDECADE2,:),YVEG,'ARI',KDECADE=KDECADE2)
+      ELSE
+        CALL AV_PGD(DTCO, &
+                   PWATSUP,PCOVER,XDATA_WATSUP,YVEG,'ARI',OCOVER,KDECADE=KDECADE)  
+      ENDIF
+    ENDIF
+  ENDIF
+
+ENDIF
+!
+IF (PRESENT(PALBNIR_SOIL)) THEN
+  IF (GDATA .AND. DTI%LDATA_ALBNIR_SOIL) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PALBNIR_SOIL,DTI%XPAR_VEGTYPE,DTI%XPAR_ALBNIR_SOIL,YBAR,'ARI',KDECADE=KDECADE2)
+  ELSEIF (I%CALBEDO=='CM13') THEN
+    CALL AV_PGD(DTCO, &
+                   PALBNIR_SOIL,PCOVER,XDATA_ALB_SOIL_NIR(:,KDECADE,:),YBAR,'ARI',&
+        OCOVER,KDECADE=KDECADE)
+  ELSE
+    CALL SOIL_ALBEDO (I%CALBEDO, I%XWSAT(:,1),PWG1, I%XALBVIS_DRY,I%XALBNIR_DRY,I%XALBUV_DRY,     &
+                      I%XALBVIS_WET,I%XALBNIR_WET,I%XALBUV_WET, PALBNIR_SOIL=PALBNIR_SOIL )
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PALBVIS_SOIL)) THEN
+  IF (GDATA .AND. DTI%LDATA_ALBVIS_SOIL) THEN
+    CALL AV_PGD_PARAM(DTI, &
+                      PALBVIS_SOIL,DTI%XPAR_VEGTYPE,DTI%XPAR_ALBVIS_SOIL,YBAR,'ARI',KDECADE=KDECADE2)
+  ELSEIF (I%CALBEDO=='CM13') THEN
+    CALL AV_PGD(DTCO, &
+                   PALBVIS_SOIL,PCOVER,XDATA_ALB_SOIL_VIS(:,KDECADE,:),YBAR,'ARI',&
+        OCOVER,KDECADE=KDECADE)    
+  ELSE
+   CALL SOIL_ALBEDO (I%CALBEDO, I%XWSAT(:,1),PWG1, I%XALBVIS_DRY,I%XALBVIS_DRY,I%XALBUV_DRY,     &
+                     I%XALBVIS_WET,I%XALBNIR_WET,I%XALBUV_WET, PALBVIS_SOIL=PALBVIS_SOIL )
+  ENDIF
+ENDIF
+!
+IF (PRESENT(PALBUV_SOIL)) THEN
+  IF ((I%CALBEDO=='CM13'.OR.OTR_ML).AND.PRESENT(PALBVIS_SOIL)) THEN
+    PALBUV_SOIL(:,:)=PALBVIS_SOIL(:,:)
+  ELSE
+    IF (GDATA .AND. DTI%LDATA_ALBUV_SOIL) THEN
+      CALL AV_PGD_PARAM(DTI, &
+                      PALBUV_SOIL,DTI%XPAR_VEGTYPE,DTI%XPAR_ALBUV_SOIL,YNAT,'ARI',KDECADE=KDECADE2)
+    ELSE
+      CALL SOIL_ALBEDO (I%CALBEDO, I%XWSAT(:,1),PWG1, I%XALBVIS_DRY,I%XALBUV_DRY,I%XALBUV_DRY,     &
+                        I%XALBVIS_WET,I%XALBNIR_WET,I%XALBUV_WET,PALBUV_SOIL=PALBUV_SOIL )
+    ENDIF
+  ENDIF
+ENDIF
+!
+!       STRESS
+!       --------
+IF (PRESENT(OSTRESS)) THEN
+  IF (SIZE(OSTRESS)>0) THEN
+    CALL SET_STRESS(SIZE(OSTRESS,1),SIZE(OSTRESS,2))      
+  ENDIF
+ENDIF
+!
+IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)
+!
+IF (LHOOK) CALL DR_HOOK('CONVERT_PATCH_ISBA',1,ZHOOK_HANDLE)
+!
+!-------------------------------------------------------------------------------
+ CONTAINS
+!-------------------------------------------------------------------------------
+!
+SUBROUTINE SET_STRESS(KSIZE1,KSIZE2)
+!
+IMPLICIT NONE
+!
+INTEGER, INTENT(IN) :: KSIZE1
+INTEGER, INTENT(IN) :: KSIZE2
+!
+REAL, DIMENSION(KSIZE1,KSIZE2)   :: ZWORK
+REAL, DIMENSION(KSIZE1,NVEGTYPE) :: ZSTRESS
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('CONVERT_PATCH_ISBA:SET_STRESS',0,ZHOOK_HANDLE)
+!
+IF (GDATA .AND. DTI%LDATA_STRESS) THEN
+  ZSTRESS(:,:)=0.
+  DO JVEGTYPE=1,NVEGTYPE
+    WHERE (DTI%LPAR_STRESS(:,JVEGTYPE)) ZSTRESS(:,JVEGTYPE)=1.
+  ENDDO
+  CALL AV_PGD_PARAM(DTI, &
+                      ZWORK,DTI%XPAR_VEGTYPE,ZSTRESS,YVEG,'ARI',KDECADE=KDECADE2)
+ELSE
+  CALL AV_PGD(DTCO, &
+                   ZWORK,PCOVER,XDATA_STRESS(:,:),YVEG,'ARI',OCOVER,KDECADE=KDECADE)
+ENDIF
+!
+WHERE (ZWORK(:,:)<0.5)
+  OSTRESS(:,:) = .FALSE.
+ELSEWHERE
+  OSTRESS(:,:) = .TRUE.
+END WHERE
+!
+IF (LHOOK) CALL DR_HOOK('CONVERT_PATCH_ISBA:SET_STRESS',1,ZHOOK_HANDLE)
+END SUBROUTINE SET_STRESS
+!
+!-------------------------------------------------------------------------------
+SUBROUTINE SET_GRID_PARAM(KNI,KGROUND,KPATCH,LDG2,LDROOT,LWG_LAYER,LROOTFRAC, &
+                          LROOTFRACGV                                         )
+!
+USE MODD_SURF_PAR, ONLY : XUNDEF, NUNDEF
+USE MODD_ISBA_PAR, ONLY : XPERMFRAC
+!
+USE MODD_REPROD_OPER, ONLY : CDGAVG, CDGDIF
+!
+USE MODI_INI_DATA_ROOTFRAC
+USE MODI_INI_DATA_SOIL
+USE MODI_PERMAFROST_DEPTH
+USE MODI_ABOR1_SFX
+!
+IMPLICIT NONE
+!
+REAL, PARAMETER     :: ZPREC=1.0E+6
+!
+INTEGER, INTENT(IN) :: KNI
+INTEGER, INTENT(IN) :: KGROUND
+INTEGER, INTENT(IN) :: KPATCH
+LOGICAL, INTENT(IN) :: LDG2
+LOGICAL, INTENT(IN) :: LDROOT
+LOGICAL, INTENT(IN) :: LWG_LAYER
+LOGICAL, INTENT(IN) :: LROOTFRAC
+LOGICAL, INTENT(IN) :: LROOTFRACGV
+!
+REAL,    DIMENSION (SIZE(XDATA_GROUND_DEPTH,1),NVEGTYPE) :: ZDATA_GROUND_DEPTH
+!
+REAL,    DIMENSION (KNI,KGROUND,KPATCH) :: ZROOTFRAC
+REAL,    DIMENSION (KNI,KPATCH)         :: ZDTOT, ZDG2, ZROOT_EXT, ZROOT_LIN
+INTEGER, DIMENSION (KNI,KPATCH)         :: IWG_LAYER
+!
+INTEGER :: JJ, JL, JPATCH
+!
+! flags taking general surface type flag into account
+LOGICAL :: GDATA_DG, GDATA_GROUND_DEPTH, GDATA_ROOT_DEPTH, GDATA_ROOTFRAC, &
+           GDATA_ROOTFRACGV, GNOECO
+!-------------------------------------------------------------------------!
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('CONVERT_PATCH_ISBA:SET_GRID_PARAM',0,ZHOOK_HANDLE)
+!
+IF(HISBA=='DIF')THEN
+  IF(.NOT.LWG_LAYER) CALL ABOR1_SFX('CONVERT_PATCH_ISBA: SET_GRID_PARAM: KWG_LAYER must be present with DIF')
+  IF(.NOT.LDROOT   ) CALL ABOR1_SFX('CONVERT_PATCH_ISBA: SET_GRID_PARAM: PDROOT must be present with DIF')
+  IF(.NOT.LDG2     ) CALL ABOR1_SFX('CONVERT_PATCH_ISBA: SET_GRID_PARAM: PDG2 must be present with DIF')   
+ENDIF
+!
+ZROOTFRAC(:,:,:) = XUNDEF
+ZDTOT    (:,:) = XUNDEF
+ZDG2     (:,:) = XUNDEF
+IWG_LAYER(:,:) = NUNDEF
+!
+ZDATA_GROUND_DEPTH(:,:) = XDATA_GROUND_DEPTH(:,:)
+!
+GDATA_DG           = GDATA .AND. DTI%LDATA_DG
+GDATA_GROUND_DEPTH = GDATA .AND. DTI%LDATA_GROUND_DEPTH
+GDATA_ROOT_DEPTH   = GDATA .AND. DTI%LDATA_ROOT_DEPTH
+GDATA_ROOTFRAC     = GDATA .AND. DTI%LDATA_ROOTFRAC
+GDATA_ROOTFRACGV   = GDATA .AND. DTI%LDATA_ROOTFRACGV
+!
+!####################################################################################
+!
+!CDGAVG : old for reprod = 'ARI' Arithmetic average for all depth 
+!         recommended    = 'INV' Harmonic average for all depth (default)
+!
+!CDGDIF : old for reprod = 'SOIL' d3 soil depth from ecoclimap for isba-df
+!         recommended    = 'ROOT' d2 soil depth from ecoclimap for isba-df (default)
+!
+!####################################################################################
+!
+!DG IN NAMELIST => GROUND_DEPTH KNOWN, ROOT_DEPTH UNKNOWN 
+IF (GDATA_DG) THEN
+  !
+  DO JLAYER=1,KGROUND
+    CALL AV_PGD_PARAM(DTI, &
+                      PDG(:,JLAYER,:),DTI%XPAR_VEGTYPE,DTI%XPAR_DG(:,JLAYER,:),YNAT,CDGAVG)
+  ENDDO
+  !
+ENDIF
+!
+IF(.NOT.GDATA_GROUND_DEPTH.AND.HISBA=='DIF'.AND.CDGDIF=='ROOT')THEN
+  DO JVEGTYPE=1,NVEGTYPE
+     IF(JVEGTYPE==NVT_NO)THEN
+        WHERE(XDATA_GROUND_DEPTH(:,JVEGTYPE)/=XUNDEF)
+          ZDATA_GROUND_DEPTH(:,JVEGTYPE) = MIN(1.0,XDATA_GROUND_DEPTH(:,JVEGTYPE))
+        ENDWHERE
+     ELSEIF(JVEGTYPE/=NVT_ROCK.AND.JVEGTYPE/=NVT_SNOW)THEN
+       ZDATA_GROUND_DEPTH(:,JVEGTYPE) = MAX(1.0,XDATA_ROOT_DEPTH(:,JVEGTYPE))
+     ELSE
+       ZDATA_GROUND_DEPTH(:,JVEGTYPE) = XDATA_ROOT_DEPTH(:,JVEGTYPE)
+     ENDIF
+   ENDDO
+ENDIF
+!
+!CALCULATION OF GROUND_DEPTH IN ZDTOT : ECOCLIMAP OR LDATA_GROUND_DEPTH
+IF (HISBA/='2-L') THEN 
+  !
+  IF (GDATA_GROUND_DEPTH .AND. (HISBA=='DIF' .OR. .NOT.GDATA_DG)) THEN
+    !GROUND DEPTH IN NAMELIST
+    CALL AV_PGD_PARAM(DTI, &
+                      ZDTOT(:,:),DTI%XPAR_VEGTYPE,DTI%XPAR_GROUND_DEPTH(:,:),YNAT,CDGAVG)
+    !Error Due to machine precision
+    WHERE(ZDTOT(:,:)/=XUNDEF)
+          ZDTOT(:,:)=INT(ZDTOT(:,:)*ZPREC)/ZPREC
+    ENDWHERE
+    !CONSISTENCY CHECK
+    IF (GDATA_DG) ZDTOT(:,:) = MIN(ZDTOT(:,:),PDG(:,KGROUND,:))
+  ELSEIF (GDATA_DG) THEN
+    !GROUND DEPTH FROM NAMELIST DG
+    ZDTOT(:,:) = PDG(:,KGROUND,:)
+  ELSE
+    !GROUND DEPTH FROM ECOCLIMAP
+    CALL AV_PGD(DTCO, &
+                   ZDTOT(:,:),PCOVER,ZDATA_GROUND_DEPTH(:,:),YNAT,CDGAVG,OCOVER,KDECADE=KDECADE)
+    IF(HISBA=='DIF'.AND.CDGDIF=='ROOT')ZDG2(:,:)=ZDTOT(:,:)
+  ENDIF
+  !
+ENDIF
+!
+!CALCULATION OF GROUND_DEPTH : Permafrost depth put to 12m
+IF(HISBA=='DIF'.AND.OPERM)THEN
+  CALL PERMAFROST_DEPTH(KNI,KPATCH,I%XPERM,ZDTOT)
+ENDIF
+!
+!IN BOTH CASES, ROOT_DEPTH IS NEEDED: PUT IN DG2
+IF (HISBA=='DIF' .OR. .NOT.GDATA_DG) THEN
+  !
+  GNOECO=(GDATA_ROOT_DEPTH .AND. .NOT.GDATA_ROOTFRAC)
+  IF (GNOECO) THEN
+    !ROOT_DEPTH IN NAMELIST
+    CALL AV_PGD_PARAM(DTI, &
+                      ZDG2(:,:),DTI%XPAR_VEGTYPE,DTI%XPAR_ROOT_DEPTH(:,:),YNAT,CDGAVG)
+    !Error Due to machine precision
+    WHERE(ZDG2(:,:)/=XUNDEF)
+          ZDG2(:,:)=INT(ZDG2(:,:)*ZPREC)/ZPREC
+    ENDWHERE    
+    !CONSISTENCY CHECKS
+    IF (DTI%LDATA_DG) ZDG2(:,:) = MIN(ZDG2(:,:),PDG(:,KGROUND,:))
+    ZDTOT(:,:) = MAX(ZDG2(:,:),ZDTOT(:,:))
+    IF (HISBA=='DIF') THEN
+      CALL AV_PGD_PARAM(DTI, &
+                      PDROOT(:,:),DTI%XPAR_VEGTYPE,DTI%XPAR_ROOT_DEPTH(:,:),YDIF,CDGAVG)
+     !Error Due to machine precision
+      WHERE(PDROOT(:,:)/=XUNDEF)
+          PDROOT(:,:)=INT(PDROOT(:,:)*ZPREC)/ZPREC
+      ENDWHERE 
+       IF(CDGDIF=='ROOT')THEN
+         WHERE(PDROOT(:,:).NE.XUNDEF) ZDTOT(:,:) = MAX(PDROOT(:,:),ZDTOT(:,:))
+         WHERE(PDROOT(:,:).NE.XUNDEF) ZDG2 (:,:) = MAX(PDROOT(:,:),ZDG2 (:,:))
+       ELSE
+         CALL AV_PGD(DTCO, &
+                   ZDG2(:,:),PCOVER,XDATA_ROOT_DEPTH(:,:),YNAT,CDGAVG,OCOVER,KDECADE=KDECADE)
+       ENDIF      
+     !CONSISTENCY CHECKS
+      IF (GDATA_DG) WHERE (PDROOT(:,:).NE.XUNDEF) PDROOT(:,:) = MIN(PDROOT(:,:),PDG(:,KGROUND,:))   
+    ENDIF
+  ELSE 
+    !ROOT_DEPTH FROM ECOCLIMAP
+    IF (HISBA=='DIF')THEN
+       CALL AV_PGD(DTCO, &
+                   PDROOT(:,:),PCOVER,XDATA_ROOT_DEPTH(:,:),YDIF,CDGAVG,OCOVER,KDECADE=KDECADE)
+       IF(CDGDIF=='ROOT')THEN
+         WHERE(PDROOT(:,:).NE.XUNDEF) ZDTOT(:,:) = MAX(PDROOT(:,:),ZDTOT(:,:))
+         WHERE(PDROOT(:,:).NE.XUNDEF) ZDG2 (:,:) = MAX(PDROOT(:,:),ZDG2 (:,:))
+       ELSE
+         CALL AV_PGD(DTCO, &
+                   ZDG2(:,:),PCOVER,XDATA_ROOT_DEPTH(:,:),YNAT,CDGAVG,OCOVER,KDECADE=KDECADE)
+       ENDIF
+    ELSE
+       CALL AV_PGD(DTCO, &
+                   ZDG2(:,:),PCOVER,XDATA_ROOT_DEPTH(:,:),YNAT,CDGAVG,OCOVER,KDECADE=KDECADE)
+    ENDIF
+    IF ( GDATA_GROUND_DEPTH .OR. GDATA_DG ) THEN
+      ZDG2  (:,:) = MIN(ZDG2  (:,:),ZDTOT(:,:))
+      IF (HISBA=='DIF') WHERE (PDROOT(:,:).NE.XUNDEF) PDROOT(:,:) = MIN(PDROOT(:,:),ZDTOT(:,:))
+    ENDIF
+  ENDIF
+  !
+  !CALCULATION OF DG IF NOT IN NAMELIST
+  IF (.NOT.GDATA_DG) THEN
+    !
+    IF (HISBA=='DIF') THEN
+      IF( MAXVAL(ZDTOT,ZDTOT/=XUNDEF)>PSOILGRID(KGROUND) ) THEN
+        CALL ABOR1_SFX('CONVERT_PATCH_ISBA: not enough soil layer with optimized grid')
+      ENDIF
+    ENDIF
+    !
+    WHERE(ZDG2(:,:)==XUNDEF.AND.ZDTOT(:,:)/=XUNDEF) ZDG2(:,:)=0.0 !No vegetation
+    !
+    !IF CISBA=DIF CALCULATES ALSO KWG_LAYER WITH USE OF SOILGRID $
+    CALL INI_DATA_SOIL(HISBA, PDG,PROOTDEPTH=ZDG2, PSOILDEPTH=ZDTOT,&
+                       PSOILGRID=PSOILGRID, KWG_LAYER=IWG_LAYER )
+    IF (HISBA=='DIF'.AND.CDGDIF=='ROOT')THEN
+       DO JPATCH=1,KPATCH
+          DO JJ=1,KNI
+             IF(OPERM.AND.IWG_LAYER(JJ,JPATCH)/=NUNDEF)THEN
+               IF(I%XPERM(JJ)<XPERMFRAC) ZDG2(JJ,JPATCH)=PDG(JJ,IWG_LAYER(JJ,JPATCH),JPATCH)
+             ELSEIF(IWG_LAYER(JJ,JPATCH)/=NUNDEF)THEN
+               ZDG2(JJ,JPATCH)=PDG(JJ,IWG_LAYER(JJ,JPATCH),JPATCH)
+             ELSE
+               ZDG2(JJ,JPATCH)=XUNDEF
+             ENDIF
+          ENDDO
+       ENDDO
+    ENDIF
+               
+    !
+  ELSEIF ( HISBA=='DIF') THEN
+    !
+    !CALCULATION OF KWG_LAYER IF DG IN NAMELIST
+    IF(GDATA_GROUND_DEPTH)THEN
+      DO JPATCH=1,KPATCH
+        DO JJ=1,KNI
+          DO JL=1,KGROUND
+            IF( PDG(JJ,JL,JPATCH) <= ZDTOT(JJ,JPATCH) .AND. ZDTOT(JJ,JPATCH) < XUNDEF ) &
+                IWG_LAYER(JJ,JPATCH) = JL
+          ENDDO
+        ENDDO
+      ENDDO                
+    ELSE
+      IWG_LAYER(:,:) = KGROUND
+    ENDIF
+    !
+  ENDIF
+  !
+  ! DROOT AND DG2 LIMITED BY KWG_LAYER
+  IF (HISBA=='DIF' .AND. .NOT.DTI%LDATA_ROOTFRAC) THEN
+    !
+    DO JPATCH=1,KPATCH
+      DO JJ=1,KNI
+        IF(IWG_LAYER(JJ,JPATCH)/=NUNDEF) THEN
+          JL = IWG_LAYER(JJ,JPATCH)
+          ZDG2  (JJ,JPATCH)=MIN(ZDG2  (JJ,JPATCH),PDG(JJ,JL,JPATCH))
+          IF (PDROOT(JJ,JPATCH)/=XUNDEF) PDROOT(JJ,JPATCH)=MIN(PDROOT(JJ,JPATCH),PDG(JJ,JL,JPATCH))    
+        ENDIF
+      ENDDO
+    ENDDO
+    !
+  ENDIF
+  !
+ENDIF
+!
+!CALCULATION OF ROOTFRAC
+IF (HISBA=='DIF') THEN
+  !
+  IF ( (GDATA_ROOTFRAC .OR. GDATA_ROOTFRACGV) .AND. (LDG2 .OR. LDROOT .OR. LROOTFRAC .OR. LROOTFRACGV)) THEN
+    !
+    !ROOTFRACGV IN NAMELIST
+    IF(LROOTFRACGV)THEN
+      DO JL=1,KGROUND
+        CALL AV_PGD_PARAM(DTI, &
+                      PROOTFRACGV(:,JL,:),DTI%XPAR_VEGTYPE,DTI%XPAR_ROOTFRACGV(:,JL,:),YNAT,'ARI')
+      ENDDO
+    ENDIF
+    !
+    !ROOTFRAC IN NAMELIST
+    DO JL=1,KGROUND
+      CALL AV_PGD_PARAM(DTI, &
+                      ZROOTFRAC(:,JL,:),DTI%XPAR_VEGTYPE,DTI%XPAR_ROOTFRAC(:,JL,:),YNAT,'ARI',KDECADE=KDECADE)
+    ENDDO
+    IF (LROOTFRAC) PROOTFRAC(:,:,:) = ZROOTFRAC(:,:,:)
+    !    
+    ZDG2  (:,:)=0.0
+    PDROOT(:,:)=0.0    
+    DO JPATCH=1,KPATCH
+      DO JJ=1,KNI
+        !
+        !DROOT DEPENDS ON ROOTFRAC
+        DO JL=KGROUND,1,-1
+          IF( ZROOTFRAC(JJ,JL,JPATCH)>=1.0 )THEN
+            ZDG2  (JJ,JPATCH) = PDG(JJ,JL,JPATCH)
+            PDROOT(JJ,JPATCH) = PDG(JJ,JL,JPATCH)
+          ELSEIF (JL<KGROUND.AND.ZROOTFRAC(JJ,JL,JPATCH)>0.0) THEN
+            IF (IWG_LAYER(JJ,JPATCH)<=JL) IWG_LAYER(JJ,JPATCH) = JL+1
+            EXIT
+          ENDIF
+        ENDDO
+        !
+        IF(PDROOT(JJ,JPATCH)==0.0.AND.ZDG2(JJ,JPATCH)==0.0)THEN
+          JL=IWG_LAYER(JJ,JPATCH)
+          ZDG2(JJ,JPATCH)=MIN(0.6,PDG(JJ,JL,JPATCH))
+        ENDIF
+        !
+      ENDDO
+    ENDDO
+    !
+  ELSEIF (LROOTFRAC .OR. LROOTFRACGV) THEN
+    !
+    !DEPENDS ON DROOT
+    IF (GDATA .AND. DTI%LDATA_ROOT_LIN) THEN
+      CALL AV_PGD_PARAM(DTI, &
+                      ZROOT_LIN(:,:),DTI%XPAR_VEGTYPE,DTI%XPAR_ROOT_LIN(:,:),YDIF,'ARI')
+    ELSE
+      CALL AV_PGD(DTCO, &
+                   ZROOT_LIN(:,:),PCOVER,XDATA_ROOT_LIN(:,:),YDIF,'ARI',OCOVER,KDECADE=KDECADE)
+    ENDIF
+    !
+    IF(LROOTFRAC)THEN
+      IF (GDATA .AND. DTI%LDATA_ROOT_EXTINCTION) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      ZROOT_EXT(:,:),DTI%XPAR_VEGTYPE,DTI%XPAR_ROOT_EXTINCTION(:,:),YDIF,'ARI')
+      ELSE
+        CALL AV_PGD(DTCO, &
+                   ZROOT_EXT(:,:),PCOVER,XDATA_ROOT_EXTINCTION(:,:),YDIF,'ARI',OCOVER,KDECADE=KDECADE)
+      ENDIF
+      !
+      CALL INI_DATA_ROOTFRAC(PDG,PDROOT,ZROOT_EXT,ZROOT_LIN,PROOTFRAC)
+    ENDIF
+    IF(LROOTFRACGV)THEN
+      IF (GDATA .AND. DTI%LDATA_ROOT_EXTINCTIONGV) THEN
+        CALL AV_PGD_PARAM(DTI, &
+                      ZROOT_EXT(:,:),DTI%XPAR_VEGTYPE,DTI%XPAR_ROOT_EXTINCTIONGV(:,:),YDIF,'ARI')
+      ELSE
+        CALL AV_PGD(DTCO, &
+                   ZROOT_EXT(:,:),PCOVER,XDATA_ROOT_EXTINCTIONGV(:,:),YDIF,'ARI',OCOVER,KDECADE=KDECADE)
+      ENDIF
+      !
+      CALL INI_DATA_ROOTFRAC(PDG,PDROOT,ZROOT_EXT,ZROOT_LIN,  &
+                             PROOTFRACGV,OGV=LROOTFRACGV)
+      !
+    ENDIF
+    !
+  ENDIF
+  !
+  IF (LDG2)      PDG2     (:,:) = ZDG2     (:,:)
+  IF (LWG_LAYER) KWG_LAYER(:,:) = IWG_LAYER(:,:)
+  !
+ENDIF
+!
+IF (LHOOK) CALL DR_HOOK('CONVERT_PATCH_ISBA:SET_GRID_PARAM',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE SET_GRID_PARAM
+!
+!-------------------------------------------------------------------------------
+END SUBROUTINE CONVERT_PATCH_ISBA

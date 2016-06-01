@@ -1,0 +1,464 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+!     #########
+      SUBROUTINE WRITE_DIAG_SEB_WATFLUX_n (DTCO, DGU, U, CHW, DGW, &
+                                           HPROGRAM)
+!     #################################
+!
+!!****  *WRITE_DIAG_SEB_WATFLUX_n* - writes WATFLUX diagnostics
+!!
+!!    PURPOSE
+!!    -------
+!!
+!!
+!!**  METHOD
+!!    ------
+!!          
+!!    REFERENCE
+!!    ---------
+!!
+!!
+!!    AUTHOR
+!!    ------
+!!      V. Masson   *Meteo France*
+!!
+!!    MODIFICATIONS
+!!    -------------
+!!      Original    01/2004
+!!      Modified    01/2006 : sea flux parameterization.
+!!      S.Bielli    11/2012 : write HU2M_WAT mis placed
+!!      B. Decharme  06/13   Add evap and sublimation diag
+!!                           Delete LPROVAR_TO_DIAG here
+!!      S. Belamari 06/2014 : Introduce GRESET to avoid errors due to NBLOCK=0
+!!                            when coupled with ARPEGE/ALADIN/AROME
+!!      B. Decharme 02/2016 : NBLOCK instead of LCOUNTW for compilation in AAA
+!-------------------------------------------------------------------------------
+!
+!*       0.    DECLARATIONS
+!              ------------
+!
+!
+!
+USE MODD_DATA_COVER_n, ONLY : DATA_COVER_t
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+USE MODD_SURF_ATM_n, ONLY : SURF_ATM_t
+USE MODD_CH_WATFLUX_n, ONLY : CH_WATFLUX_t
+USE MODD_DIAG_WATFLUX_n, ONLY : DIAG_WATFLUX_t
+!
+#ifdef SFX_ARO
+USE MODD_IO_SURF_ARO,   ONLY : NBLOCK
+#endif
+!
+USE MODD_SURF_PAR,      ONLY : XUNDEF
+!
+!
+!
+!
+USE MODI_INIT_IO_SURF_n
+USE MODI_WRITE_SURF
+USE MODI_END_IO_SURF_n
+!
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+!*       0.1   Declarations of arguments
+!              -------------------------
+!
+!
+TYPE(DATA_COVER_t), INTENT(INOUT) :: DTCO
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+TYPE(SURF_ATM_t), INTENT(INOUT) :: U
+TYPE(CH_WATFLUX_t), INTENT(INOUT) :: CHW
+TYPE(DIAG_WATFLUX_t), INTENT(INOUT) :: DGW
+!
+ CHARACTER(LEN=6),  INTENT(IN)  :: HPROGRAM ! program calling
+!
+!*       0.2   Declarations of local variables
+!              -------------------------------
+!
+INTEGER           :: IRESP          ! IRESP  : return-code if a problem appears
+ CHARACTER(LEN=12) :: YRECFM         ! Name of the article to be written
+ CHARACTER(LEN=100):: YCOMMENT       ! Comment string
+ CHARACTER(LEN=2)  :: YNUM
+!
+LOGICAL           :: GRESET
+INTEGER           :: JSV, JSW
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!-------------------------------------------------------------------------------
+!
+!         Initialisation for IO
+!
+IF (LHOOK) CALL DR_HOOK('WRITE_DIAG_SEB_WATFLUX_N',0,ZHOOK_HANDLE)
+!
+GRESET=.TRUE.
+#ifdef SFX_ARO
+GRESET=(NBLOCK>0)
+#endif
+!
+ CALL INIT_IO_SURF_n(DTCO, DGU, U, &
+                    HPROGRAM,'WATER ','WATFLX','WRITE')
+!
+!
+!*       2.     Richardson number :
+!               -----------------
+!
+IF (DGW%N2M>=1) THEN
+
+YRECFM='RI_WAT'
+YCOMMENT='X_Y_'//YRECFM
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XRI(:),IRESP,HCOMMENT=YCOMMENT)
+!
+END IF
+!
+!*       3.     Energy fluxes :
+!               -------------
+!
+IF (DGW%LSURF_BUDGET) THEN
+
+YRECFM='RN_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XRN(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='H_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XH(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='LE_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XLE(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='LEI_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XLEI(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='GFLUX_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XGFLUX(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='EVAP_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (kg/m2/s)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XEVAP(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='SUBL_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (kg/m2/s)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XSUBL(:),IRESP,HCOMMENT=YCOMMENT)
+!
+IF (DGW%LRAD_BUDGET) THEN
+!       
+   YRECFM='SWD_WAT'
+   YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+   !
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XSWD(:),IRESP,HCOMMENT=YCOMMENT)
+   !
+   YRECFM='SWU_WAT'
+   YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+   !
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XSWU(:),IRESP,HCOMMENT=YCOMMENT)
+   !
+   YRECFM='LWD_WAT'
+   YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+   !
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XLWD(:),IRESP,HCOMMENT=YCOMMENT)
+   !
+   YRECFM='LWU_WAT'
+   YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+   !
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XLWU(:),IRESP,HCOMMENT=YCOMMENT)
+   !
+   DO JSW=1, SIZE(DGW%XSWBD,2)
+      YNUM=ACHAR(48+JSW)
+      !
+      YRECFM='SWD_WAT_'//YNUM
+      YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+      !
+      CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XSWBD(:,JSW),IRESP,HCOMMENT=YCOMMENT)
+      !
+      YRECFM='SWU_WAT_'//YNUM
+      YCOMMENT='X_Y_'//YRECFM//' (W/m2)'
+      !
+      CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XSWBU(:,JSW),IRESP,HCOMMENT=YCOMMENT)
+      !
+   ENDDO
+!
+ENDIF
+!
+YRECFM='FMU_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (kg/ms2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XFMU(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='FMV_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (kg/ms2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XFMV(:),IRESP,HCOMMENT=YCOMMENT)
+!
+END IF
+!
+IF (DGW%LSURF_BUDGETC) THEN
+
+YRECFM='RNC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XRNC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='HC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XHC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='LEC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XLEC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='LEIC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XLEIC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='GFLUXC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XGFLUXC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='EVAPC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (kg/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XEVAPC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='SUBLC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (kg/m2)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XSUBLC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+IF (DGW%LRAD_BUDGET .OR. (DGW%LSURF_BUDGETC .AND. .NOT.DGU%LRESET_BUDGETC)) THEN
+!
+   YRECFM='SWDC_WAT'
+   YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+   !
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XSWDC(:),IRESP,HCOMMENT=YCOMMENT)
+   !
+   YRECFM='SWUC_WAT'
+   YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+   !
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XSWUC(:),IRESP,HCOMMENT=YCOMMENT)
+   !
+   YRECFM='LWDC_WAT'
+   YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+   !
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XLWDC(:),IRESP,HCOMMENT=YCOMMENT)
+   !
+   YRECFM='LWUC_WAT'
+   YCOMMENT='X_Y_'//YRECFM//' (J/m2)'
+   !
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XLWUC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+ENDIF
+!
+YRECFM='FMUC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (kg/ms)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XFMUC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='FMVC_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (kg/ms)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XFMVC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+END IF
+!
+!
+!*       4.     Transfer coefficients
+!               ---------------------
+!
+IF (DGW%LCOEF) THEN
+
+YRECFM='CD_WAT'
+YCOMMENT='X_Y_'//YRECFM
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XCD(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='CH_WAT'
+YCOMMENT='X_Y_'//YRECFM
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XCH(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='CE_WAT'
+YCOMMENT='X_Y_'//YRECFM
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XCE(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='Z0_WAT'
+YCOMMENT='X_Y_'//YRECFM
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XZ0(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='Z0H_WAT'
+YCOMMENT='X_Y_'//YRECFM
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XZ0H(:),IRESP,HCOMMENT=YCOMMENT)
+!
+END IF
+!
+!
+!*       5.     Surface humidity
+!               ----------------
+!
+IF (DGW%LSURF_VARS) THEN
+
+YRECFM='QS_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (KG/KG)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XQS(:),IRESP,HCOMMENT=YCOMMENT)
+!
+ENDIF
+!
+!
+!*       6.     parameters at 2 and 10 meters :
+!               -----------------------------
+!
+IF (DGW%N2M>=1) THEN
+!
+YRECFM='T2M_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (K)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XT2M(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='T2MMIN_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (K)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XT2M_MIN(:),IRESP,HCOMMENT=YCOMMENT)
+IF(GRESET)DGW%XT2M_MIN(:)=XUNDEF
+!
+YRECFM='T2MMAX_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (K)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XT2M_MAX(:),IRESP,HCOMMENT=YCOMMENT)
+IF(GRESET)DGW%XT2M_MAX(:)=0.0
+!
+YRECFM='Q2M_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (KG/KG)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XQ2M(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='HU2M_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (-)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XHU2M(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='HU2MMIN_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (-)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XHU2M_MIN(:),IRESP,HCOMMENT=YCOMMENT)
+IF(GRESET)DGW%XHU2M_MIN(:)=XUNDEF
+!
+YRECFM='HU2MMAX_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (-)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XHU2M_MAX(:),IRESP,HCOMMENT=YCOMMENT)
+IF(GRESET)DGW%XHU2M_MAX(:)=-XUNDEF
+!
+YRECFM='ZON10M_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (M/S)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XZON10M(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='MER10M_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (M/S)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XMER10M(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='W10M_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (M/S)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XWIND10M(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='W10MMAX_WAT'
+YCOMMENT='X_Y_'//YRECFM//' (M/S)'
+!
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,DGW%XWIND10M_MAX(:),IRESP,HCOMMENT=YCOMMENT)
+IF(GRESET)DGW%XWIND10M_MAX(:)=0.0
+!
+END IF
+!
+!
+!*       7.     chemical diagnostics:
+!               --------------------
+!
+IF (CHW%SVW%NBEQ>0 .AND. CHW%CCH_DRY_DEP=="WES89 ") THEN
+  DO JSV = 1,SIZE(CHW%CCH_NAMES,1)
+    YRECFM='DV_WAT_'//TRIM(CHW%CCH_NAMES(JSV))
+    WRITE(YCOMMENT,'(A13,I3.3)')'(m/s) DV_WAT_',JSV
+    CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,CHW%XDEP(:,JSV),IRESP,HCOMMENT=YCOMMENT)
+  END DO
+ENDIF
+!
+!-------------------------------------------------------------------------------
+!
+!         End of IO
+!
+ CALL END_IO_SURF_n(HPROGRAM)
+IF (LHOOK) CALL DR_HOOK('WRITE_DIAG_SEB_WATFLUX_N',1,ZHOOK_HANDLE)
+!
+!
+END SUBROUTINE WRITE_DIAG_SEB_WATFLUX_n

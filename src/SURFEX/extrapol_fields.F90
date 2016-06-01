@@ -1,0 +1,333 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+SUBROUTINE EXTRAPOL_FIELDS (DTCO, DTI, IG, I, UG, U, &
+                            HPROGRAM,KLUOUT)
+!!
+!!    PURPOSE
+!!    -------
+!!  parameters defined by cover need to be extrapolated if LDATA_VEGTYPE and NOT LDATA_"PARAM"
+!!  all ten-day periods are calculated one time for all, then written in PGD.txt
+!!
+!!    METHOD
+!!    ------ 
+!!  these parameters are: LAI, HT, DG, ROOTFRAC, IRRIG, WATSUP
+!!  Parameters are calculated as in ecoclimap, by vegtype, and then extrapolated
+!
+!!    EXTERNAL
+!!    --------
+!!
+!!    IMPLICIT ARGUMENTS
+!!    ------------------
+!!
+!!    REFERENCE
+!!    ---------
+!!
+!!    AUTHOR
+!!    ------
+!!
+!!    S. Faroux        Meteo-France
+!!
+!!    MODIFICATION
+!!    ------------
+!!
+!!    Original    16/11/10
+!!    R. Alkama     04/12 : add 6 new tree vegtype (9 instead 3)
+!!
+!!    DECLARATIONS
+!!
+!
+!
+USE MODD_DATA_COVER_n, ONLY : DATA_COVER_t
+USE MODD_DATA_ISBA_n, ONLY : DATA_ISBA_t
+USE MODD_ISBA_GRID_n, ONLY : ISBA_GRID_t
+USE MODD_ISBA_n, ONLY : ISBA_t
+USE MODD_SURF_ATM_GRID_n, ONLY : SURF_ATM_GRID_t
+USE MODD_SURF_ATM_n, ONLY : SURF_ATM_t
+!
+USE MODD_SURF_PAR,       ONLY : XUNDEF
+!
+USE MODD_REPROD_OPER,    ONLY : CDGDIF, CDGAVG
+!
+USE MODD_DATA_COVER_PAR, ONLY : NVEGTYPE, NVT_NO, NVT_ROCK, NVT_SNOW, JPCOVER
+!
+USE MODD_DATA_COVER,     ONLY : XDATA_LAI, XDATA_H_TREE,                                &
+                                XDATA_IRRIG, XDATA_WATSUP,                              &
+                                XDATA_GARDEN, XDATA_NATURE,                             &
+                                XDATA_ROOT_DEPTH, XDATA_ROOT_DEPTHGV, XDATA_GROUND_DEPTH,  &
+                                XDATA_ROOT_EXTINCTION, XDATA_ROOT_LIN
+!                                
+!                                
+!
+USE MODI_AV_PGD
+USE MODI_INI_VAR_FROM_VEGTYPE_DATA
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+!*    0.1    Declaration of arguments
+!            ------------------------
+!
+!
+TYPE(DATA_COVER_t), INTENT(INOUT) :: DTCO
+TYPE(DATA_ISBA_t), INTENT(INOUT) :: DTI
+TYPE(ISBA_GRID_t), INTENT(INOUT) :: IG
+TYPE(ISBA_t), INTENT(INOUT) :: I
+TYPE(SURF_ATM_GRID_t), INTENT(INOUT) :: UG
+TYPE(SURF_ATM_t), INTENT(INOUT) :: U
+!
+ CHARACTER(LEN=6),       INTENT(IN)    :: HPROGRAM  ! host program
+INTEGER,                INTENT(IN)    :: KLUOUT
+!
+!
+!*    0.2    Declaration of local variables
+!            ------------------------------
+!
+REAL, DIMENSION (SIZE(XDATA_GROUND_DEPTH,1),NVEGTYPE) :: ZDATA_GROUND_DEPTH
+!
+ CHARACTER(LEN=3)  :: YTREE, YNAT, YVEG, YDIF, YROOT
+REAL, DIMENSION(IG%NDIM,36,NVEGTYPE) :: ZWORK
+REAL, DIMENSION(NVEGTYPE) :: ZDEF
+REAL :: ZFRAC
+INTEGER :: JTIME, JVEGTYPE, JCOVER
+!
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+!----------------------------------------------------------------------------
+IF (LHOOK) CALL DR_HOOK('EXTRAPOL_FIELDS',0,ZHOOK_HANDLE)
+!
+YNAT ='NAT'
+YTREE='TRE'
+YVEG ='VEG'
+YDIF ='DVG'
+!
+!            2. Extrapolations for land use or user
+!            --------------------------------------
+!
+!   LAI
+!   ---
+IF (.NOT.DTI%LDATA_LAI) THEN
+!
+  DO JTIME=1,36
+!    
+!   ECOCLIMAP spatial distribution field
+    IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)
+    CALL AV_PGD(DTCO, &
+                ZWORK(:,JTIME,:),I%XCOVER,XDATA_LAI(:,JTIME,:),YVEG,'ARI',I%LCOVER,KDECADE=JTIME)
+    DO JVEGTYPE=1,3
+      WHERE (DTI%XPAR_VEGTYPE(:,JVEGTYPE)/=0.) ZWORK(:,JTIME,JVEGTYPE) = 0.
+    ENDDO
+    !
+    ZDEF(:) = XUNDEF
+    DO JVEGTYPE=1,NVEGTYPE
+      IF (ANY(DTI%XPAR_VEGTYPE(:,JVEGTYPE)/=0.) .AND. ALL(ZWORK(:,JTIME,JVEGTYPE)==XUNDEF)) THEN
+        ZFRAC = 0.
+        DO JCOVER = 1,JPCOVER
+          IF (DTCO%XDATA_VEGTYPE(JCOVER,JVEGTYPE)>ZFRAC) THEN
+            ZDEF(JVEGTYPE) = XDATA_LAI(JCOVER,JTIME,JVEGTYPE)
+            ZFRAC = DTCO%XDATA_VEGTYPE(JCOVER,JVEGTYPE)
+            IF (ZFRAC==1.) EXIT
+          ENDIF
+        ENDDO
+      ENDIF
+    ENDDO
+    !    
+!   Extrapolation toward new vegtype distribution field from updated land-use map or user 
+    CALL INI_VAR_FROM_VEGTYPE_DATA(DTCO, DTI, UG, U, &
+                                   HPROGRAM,KLUOUT,'LAI: leaf area index',ZWORK(:,JTIME,:),PDEF=ZDEF)
+!    
+  ENDDO
+!
+  CALL GOTO_NTIME(DTI%NTIME,ZWORK,DTI%XPAR_LAI)
+!
+  DTI%LDATA_LAI=.TRUE.
+!  
+ENDIF
+!
+!   H_TREE
+!   ------
+IF (.NOT.DTI%LDATA_H_TREE .AND. (I%CPHOTO/='NON' .OR. .NOT.DTI%LDATA_Z0)) THEN
+!
+  ZDEF(:)=1.
+  ZDEF(4:6)=10.
+  ZDEF(13:17)=10.
+  ZDEF(19)=1.
+!
+! ECOCLIMAP spatial distribution field  
+  IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)
+  CALL AV_PGD(DTCO, &
+                DTI%XPAR_H_TREE,I%XCOVER,XDATA_H_TREE,YTREE,'ARI',I%LCOVER,KDECADE=1)
+!
+! Extrapolation toward new vegtype distribution field from updated land-use map or user  
+  CALL INI_VAR_FROM_VEGTYPE_DATA(DTCO, DTI, UG, U, &
+                                   HPROGRAM,KLUOUT,'H_TREE: height of trees',DTI%XPAR_H_TREE,PDEF=ZDEF)
+!  
+  DTI%LDATA_H_TREE=.TRUE.
+!  
+ENDIF
+!
+!   DG
+!   --
+!
+!ROOT_DEPTH is needed for DIF, 2-L, 3-L 
+IF (.NOT.DTI%LDATA_DG .AND. .NOT.DTI%LDATA_ROOT_DEPTH) THEN
+  YROOT=YNAT
+  IF(I%CISBA=='DIF')YROOT=YDIF
+  IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)        
+  CALL AV_PGD(DTCO, &
+                DTI%XPAR_ROOT_DEPTH(:,:),I%XCOVER,XDATA_ROOT_DEPTH(:,:),YNAT,CDGAVG,I%LCOVER,KDECADE=1)
+
+  ZDEF(:) = XUNDEF
+  DO JVEGTYPE=1,NVEGTYPE
+    IF (ANY(DTI%XPAR_VEGTYPE(:,JVEGTYPE)/=0.) .AND. ALL(DTI%XPAR_ROOT_DEPTH(:,JVEGTYPE)==XUNDEF)) THEN
+      ZFRAC = 0.
+      DO JCOVER = 1,JPCOVER
+        IF (DTCO%XDATA_VEGTYPE(JCOVER,JVEGTYPE)>ZFRAC) THEN
+          ZDEF(JVEGTYPE) = XDATA_ROOT_DEPTH(JCOVER,JVEGTYPE)
+          ZFRAC = DTCO%XDATA_VEGTYPE(JCOVER,JVEGTYPE)
+          IF (ZFRAC==1.) EXIT
+        ENDIF
+      ENDDO
+    ENDIF
+  ENDDO
+
+  CALL INI_VAR_FROM_VEGTYPE_DATA(DTCO, DTI, UG, U, &
+                                   HPROGRAM,KLUOUT,'ROOTDEPTH', DTI%XPAR_ROOT_DEPTH(:,:),PDEF=ZDEF)
+  DTI%LDATA_ROOT_DEPTH = .TRUE.
+ENDIF
+!
+!ROOT_DEPTH is needed for DIF, 2-L, 3-L 
+IF (.NOT.DTI%LDATA_DG .AND. .NOT.DTI%LDATA_ROOT_DEPTHGV) THEN
+  YROOT=YNAT
+  IF(I%CISBA=='DIF')YROOT=YDIF
+  IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)        
+  CALL AV_PGD(DTCO, &
+                DTI%XPAR_ROOT_DEPTHGV(:,:),I%XCOVER,XDATA_ROOT_DEPTHGV(:,:),YNAT,CDGAVG,I%LCOVER,KDECADE=1)
+
+  ZDEF(:) = XUNDEF
+  DO JVEGTYPE=1,NVEGTYPE
+    IF (ANY(DTI%XPAR_VEGTYPE(:,JVEGTYPE)/=0.) .AND. ALL(DTI%XPAR_ROOT_DEPTHGV(:,JVEGTYPE)==XUNDEF)) THEN
+      ZFRAC = 0.
+      DO JCOVER = 1,JPCOVER
+        IF (DTCO%XDATA_VEGTYPE(JCOVER,JVEGTYPE)>ZFRAC) THEN
+          ZDEF(JVEGTYPE) = XDATA_ROOT_DEPTHGV(JCOVER,JVEGTYPE)
+          ZFRAC = DTCO%XDATA_VEGTYPE(JCOVER,JVEGTYPE)
+          IF (ZFRAC==1.) EXIT
+        ENDIF
+      ENDDO
+    ENDIF
+  ENDDO
+
+  CALL INI_VAR_FROM_VEGTYPE_DATA(DTCO, DTI, UG, U, &
+                                   HPROGRAM,KLUOUT,'ROOTDEPTH', DTI%XPAR_ROOT_DEPTHGV(:,:),PDEF=ZDEF)
+  DTI%LDATA_ROOT_DEPTHGV = .TRUE.
+ENDIF
+!
+!GROUND_DEPTH is needed for DIF and 3-L
+IF (.NOT.DTI%LDATA_DG .AND. I%CISBA/='2-L' .AND. .NOT.DTI%LDATA_GROUND_DEPTH) THEN
+  ZDATA_GROUND_DEPTH(:,:)=XDATA_GROUND_DEPTH(:,:)
+  IF(I%CISBA=='DIF'.AND.CDGDIF=='ROOT')THEN
+    DO JVEGTYPE=1,NVEGTYPE
+       IF(JVEGTYPE==NVT_NO)THEN
+          WHERE(XDATA_GROUND_DEPTH(:,JVEGTYPE)/=XUNDEF)
+               ZDATA_GROUND_DEPTH(:,JVEGTYPE) = MIN(1.0,XDATA_GROUND_DEPTH(:,JVEGTYPE))
+          ENDWHERE
+       ELSEIF(JVEGTYPE/=NVT_ROCK.AND.JVEGTYPE/=NVT_SNOW)THEN
+         ZDATA_GROUND_DEPTH(:,JVEGTYPE) = MAX(1.0,XDATA_ROOT_DEPTH(:,JVEGTYPE))
+       ELSE
+         ZDATA_GROUND_DEPTH(:,JVEGTYPE) = XDATA_ROOT_DEPTH(:,JVEGTYPE)
+       ENDIF
+     ENDDO
+  ENDIF
+  IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)      
+  CALL AV_PGD(DTCO, &
+                DTI%XPAR_GROUND_DEPTH(:,:),I%XCOVER,ZDATA_GROUND_DEPTH(:,:),YNAT,CDGAVG,I%LCOVER,KDECADE=1)
+
+  ZDEF(:) = XUNDEF
+  DO JVEGTYPE=1,NVEGTYPE
+    IF (ANY(DTI%XPAR_VEGTYPE(:,JVEGTYPE)/=0.) .AND. ALL(DTI%XPAR_GROUND_DEPTH(:,JVEGTYPE)==XUNDEF)) THEN
+      ZFRAC = 0.
+      DO JCOVER = 1,JPCOVER
+        IF (DTCO%XDATA_VEGTYPE(JCOVER,JVEGTYPE)>ZFRAC) THEN
+          ZDEF(JVEGTYPE) = XDATA_GROUND_DEPTH(JCOVER,JVEGTYPE)
+          ZFRAC = DTCO%XDATA_VEGTYPE(JCOVER,JVEGTYPE)
+          IF (ZFRAC==1.) EXIT
+        ENDIF
+      ENDDO
+    ENDIF
+  ENDDO
+
+  CALL INI_VAR_FROM_VEGTYPE_DATA(DTCO, DTI, UG, U, &
+                                   HPROGRAM,KLUOUT,'GROUNDDEPTH', DTI%XPAR_GROUND_DEPTH(:,:),PDEF=ZDEF)
+  DTI%LDATA_GROUND_DEPTH = .TRUE.
+ENDIF
+!
+!  IRRIG
+!  -----
+IF (.NOT.DTI%LDATA_IRRIG) THEN
+   ZDEF(:)=0.
+  DO JTIME=1,36
+!   ECOCLIMAP spatial distribution field      
+    IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)
+    CALL AV_PGD(DTCO, &
+                ZWORK(:,JTIME,:),I%XCOVER,XDATA_IRRIG,YVEG,'ARI',I%LCOVER,KDECADE=JTIME)
+!   Extrapolation toward new vegtype distribution field from updated land-use map or user  
+    CALL INI_VAR_FROM_VEGTYPE_DATA(DTCO, DTI, UG, U, &
+                                   HPROGRAM,KLUOUT,'IRRIG  ', ZWORK(:,JTIME,:), PDEF=ZDEF)
+  ENDDO
+!
+  CALL GOTO_NTIME(DTI%NTIME,ZWORK,DTI%XPAR_IRRIG)
+!
+  DTI%LDATA_IRRIG=.TRUE.
+!
+ENDIF
+!
+!   WATSUP
+!   ------
+IF (.NOT.DTI%LDATA_WATSUP) THEN
+  ZDEF(:)=0.
+  DO JTIME=1,36
+!   ECOCLIMAP spatial distribution field    
+    IF (ASSOCIATED(DTCO%XDATA_WEIGHT)) DEALLOCATE(DTCO%XDATA_WEIGHT)
+    CALL AV_PGD(DTCO, &
+                ZWORK(:,JTIME,:),I%XCOVER,XDATA_WATSUP,YVEG,'ARI',I%LCOVER,KDECADE=JTIME)  
+!   Extrapolation toward new vegtype distribution field from updated land-use map or user  
+    CALL INI_VAR_FROM_VEGTYPE_DATA(DTCO, DTI, UG, U, &
+                                   HPROGRAM,KLUOUT,'WATSUP  ', ZWORK(:,JTIME,:), PDEF=ZDEF)
+  ENDDO
+  !
+  CALL GOTO_NTIME(DTI%NTIME,ZWORK,DTI%XPAR_WATSUP)
+  !  
+  DTI%LDATA_WATSUP=.TRUE.
+ENDIF
+!
+IF (LHOOK) CALL DR_HOOK('EXTRAPOL_FIELDS',1,ZHOOK_HANDLE)
+!
+ CONTAINS 
+!
+SUBROUTINE GOTO_NTIME(KTIME,PWORK,PPAR_DATA)
+!
+INTEGER, INTENT(IN) :: KTIME
+REAL, DIMENSION(:,:,:), INTENT(IN) :: PWORK
+REAL, DIMENSION(:,:,:), INTENT(OUT) :: PPAR_DATA
+!
+IF (KTIME==1) THEN
+  PPAR_DATA(:,1,:) = SUM(PWORK(:,:,:),2)/36.
+ELSEIF (KTIME==2) THEN
+  PPAR_DATA(:,1,:) = (SUM(PWORK(:,1:8,:),2) + SUM(PWORK(:,27:36,:),2))/18.
+  PPAR_DATA(:,2,:) = SUM(PWORK(:,9:26,:),2)/18.
+ELSEIF (KTIME==12) THEN
+  DO JTIME=1,12
+    PPAR_DATA(:,JTIME,:) = SUM(PWORK(:,(JTIME-1)*3+1:JTIME*3,:),2)/3.
+  ENDDO
+ELSEIF (KTIME==36) THEN
+  PPAR_DATA(:,:,:) = PWORK(:,:,:)  
+ENDIF
+!
+END SUBROUTINE GOTO_NTIME
+!
+!-------------------------------------------------------------------------------
+END SUBROUTINE EXTRAPOL_FIELDS

@@ -1,0 +1,104 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+!     ##################
+      MODULE MODN_IDEAL_n
+!     ##################
+!
+!!****  *MODN_IDEAL_n* - declaration of namelist NAM_IDEALn
+!!
+!!    PURPOSE
+!!    -------
+!       The purpose of this module is to specify  the namelist NAM_IDEALn
+!
+!!
+!!**  IMPLICIT ARGUMENTS
+!!    ------------------
+!!
+!!    REFERENCE
+!!    ---------
+!!
+!!       
+!!    AUTHOR
+!!    ------
+!!      P. Le Moigne    *Meteo France*
+!!
+!!    MODIFICATIONS
+!!    -------------
+!!      Original    04/2009                   
+!!      Modified    08/2009 by B. Decharme : LSURF_BUDGETC for all tiles
+!-------------------------------------------------------------------------------
+!
+!*       0.   DECLARATIONS
+!             ------------
+!
+!
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+REAL     :: XDIAG_TSTEP
+INTEGER  :: N2M
+LOGICAL  :: L2M_MIN_ZS         
+LOGICAL  :: LSURF_BUDGET
+LOGICAL  :: LRAD_BUDGET
+LOGICAL  :: LSURF_BUDGETC
+LOGICAL  :: LRESET_BUDGETC
+LOGICAL  :: LCOEF
+LOGICAL  :: LSURF_VARS
+!
+NAMELIST/NAM_DIAG_SURFn/N2M,L2M_MIN_ZS,LSURF_BUDGET,LRAD_BUDGET, &
+                          LSURF_BUDGETC,LRESET_BUDGETC,LCOEF,LSURF_VARS  
+!
+ CONTAINS
+!
+SUBROUTINE INIT_NAM_DIAG_SURFn (DGL)
+!
+  USE MODD_DIAG_IDEAL_n, ONLY : DIAG_IDEAL_t
+!
+  IMPLICIT NONE
+
+!
+  TYPE(DIAG_IDEAL_t), INTENT(INOUT) :: DGL
+  REAL(KIND=JPRB) :: ZHOOK_HANDLE
+
+  IF (LHOOK) CALL DR_HOOK('MODN_IDEAL_N:INIT_NAM_DIAG_SURFN',0,ZHOOK_HANDLE)
+  XDIAG_TSTEP = DGL%XDIAG_TSTEP  
+  N2M = DGL%N2M
+  L2M_MIN_ZS = DGL%L2M_MIN_ZS
+  LSURF_BUDGET = DGL%LSURF_BUDGET
+  LRAD_BUDGET = DGL%LRAD_BUDGET
+  LSURF_BUDGETC = DGL%LSURF_BUDGETC
+  LRESET_BUDGETC = DGL%LRESET_BUDGETC  
+  LCOEF = DGL%LCOEF
+  LSURF_VARS = DGL%LSURF_VARS
+IF (LHOOK) CALL DR_HOOK('MODN_IDEAL_N:INIT_NAM_DIAG_SURFN',1,ZHOOK_HANDLE)
+END SUBROUTINE INIT_NAM_DIAG_SURFn
+
+SUBROUTINE UPDATE_NAM_DIAG_SURFn (DGL)
+!
+  USE MODD_DIAG_IDEAL_n, ONLY : DIAG_IDEAL_t
+!
+  IMPLICIT NONE
+
+!
+  TYPE(DIAG_IDEAL_t), INTENT(INOUT) :: DGL
+  REAL(KIND=JPRB) :: ZHOOK_HANDLE
+
+  IF (LHOOK) CALL DR_HOOK('MODN_IDEAL_N:UPDATE_NAM_DIAG_SURFN',0,ZHOOK_HANDLE)
+  DGL%XDIAG_TSTEP = XDIAG_TSTEP    
+  DGL%N2M = N2M
+  DGL%L2M_MIN_ZS = L2M_MIN_ZS
+  DGL%LSURF_BUDGET = LSURF_BUDGET
+  DGL%LRAD_BUDGET = LRAD_BUDGET 
+  DGL%LSURF_BUDGETC = LSURF_BUDGETC
+  DGL%LRESET_BUDGETC = LRESET_BUDGETC  
+  DGL%LCOEF = LCOEF
+  DGL%LSURF_VARS = LSURF_VARS
+IF (LHOOK) CALL DR_HOOK('MODN_IDEAL_N:UPDATE_NAM_DIAG_SURFN',1,ZHOOK_HANDLE)
+END SUBROUTINE UPDATE_NAM_DIAG_SURFn
+!
+END MODULE MODN_IDEAL_n

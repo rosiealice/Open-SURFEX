@@ -1,0 +1,206 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+SUBROUTINE OL_DEFINE_DIM (UG, U, &
+                          HPROGRAM, KLUOUT, KNI, KDIM1, HUNIT1, HUNIT2, &
+                         PX, PY, KDIMS, KDDIM, HNAME_DIM, KNPATCH)
+!     #######################################################
+!!****  *OL_DEFINE_DIM* - 
+!!
+!!    PURPOSE
+!!    -------
+!!
+      !!
+!!**  METHOD
+!!    ------
+!!
+!!    EXTERNAL
+!!    --------
+!!
+!!
+!!    IMPLICIT ARGUMENTS
+!!    ------------------
+!!
+!!    REFERENCE
+!!    ---------
+!!
+!!
+!!    AUTHOR
+!!    ------
+!!      S. Faroux   *Meteo France*
+!!
+!!    MODIFICATIONS
+!!    -------------
+!!      Original    06/2010 
+!!      07/2011     add specific computation for IGN grid (B. Decharme)
+!-------------------------------------------------------------------------------                         
+!
+!
+!
+USE MODD_SURF_ATM_GRID_n, ONLY : SURF_ATM_GRID_t
+USE MODD_SURF_ATM_n, ONLY : SURF_ATM_t
+!
+USE MODD_IO_SURF_OL, ONLY: NMASK_IGN
+!
+USE MODN_IO_OFFLINE, ONLY : LWRITE_COORD
+!
+USE MODI_GET_GRID_DIM
+USE MODI_GET_GRID_COORD
+!
+USE MODE_GRIDTYPE_IGN
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+include 'netcdf.inc'
+!
+!
+TYPE(SURF_ATM_GRID_t), INTENT(INOUT) :: UG
+TYPE(SURF_ATM_t), INTENT(INOUT) :: U
+!
+ CHARACTER(LEN=6),  INTENT(IN)    :: HPROGRAM
+INTEGER, INTENT(IN)              :: KLUOUT
+INTEGER, INTENT(IN)              :: KNI
+INTEGER, INTENT(OUT)             :: KDIM1
+ CHARACTER(LEN=13) , DIMENSION(:), INTENT(OUT) :: HUNIT1, HUNIT2
+REAL,DIMENSION(:), POINTER                :: PX, PY
+INTEGER, DIMENSION(:), POINTER            :: KDIMS, KDDIM
+ CHARACTER(LEN=100), DIMENSION(:), POINTER :: HNAME_DIM
+INTEGER, OPTIONAL, INTENT(IN)    :: KNPATCH
+!
+REAL, DIMENSION(KNI)             :: ZXX, ZYY
+ CHARACTER(LEN=3)                 :: YTYPE
+INTEGER                          :: INDIMS, IDIM2
+INTEGER                          :: I, J, K, L
+LOGICAL                          :: GRECT     ! T if rectangular grid
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('OL_DEFINE_DIM',0,ZHOOK_HANDLE)
+!
+KDIM1=0
+IDIM2=0
+!
+IF (.NOT.LWRITE_COORD) THEN
+  !
+  IF ( UG%CGRID.EQ.'CONF PROJ ' .OR. UG%CGRID.EQ.'CARTESIAN '&
+  .OR. UG%CGRID.EQ.'LONLAT REG' .OR. UG%CGRID.EQ.'IGN' ) THEN
+    YTYPE='XY '
+    IF (UG%CGRID.EQ.'LONLAT REG') YTYPE='LON'
+    IF (ASSOCIATED(UG%XGRID_FULL_PAR)) THEN
+      CALL GET_GRID_DIM(UG%CGRID,UG%NGRID_PAR,UG%XGRID_FULL_PAR,GRECT,KDIM1,IDIM2)
+    ELSEIF (ASSOCIATED(UG%XGRID_PAR)) THEN
+      CALL GET_GRID_DIM(UG%CGRID,UG%NGRID_PAR,UG%XGRID_PAR,GRECT,KDIM1,IDIM2)
+    ENDIF
+  ENDIF
+  !
+ENDIF
+!
+INDIMS = 2
+IF ( KDIM1.NE.0       ) INDIMS = 3
+IF ( PRESENT(KNPATCH) ) INDIMS = INDIMS + 1
+!
+ALLOCATE(KDIMS(INDIMS))
+ALLOCATE(KDDIM(INDIMS))
+ALLOCATE(HNAME_DIM(INDIMS))
+!
+IF ( KDIM1.NE.0 ) THEN
+  KDIMS(1) = KDIM1
+  KDIMS(2) = IDIM2
+  IF (YTYPE.EQ.'LON') THEN
+    HNAME_DIM(1) = 'lon'
+    HNAME_DIM(2) = 'lat'
+    HUNIT1(1)    = 'degrees_east'
+    HUNIT2(1)    = 'degrees_north'
+  ELSE
+    HNAME_DIM(1) = 'xx'
+    HNAME_DIM(2) = 'yy'
+    HUNIT1(1)    = 'meters'
+    HUNIT2(1)    = 'meters'
+  ENDIF
+  ALLOCATE(PX(KDIM1))
+  ALLOCATE(PY(IDIM2))
+ELSE
+  KDIMS(1) = KNI
+  HNAME_DIM(1) = 'Number_of_points' 
+  IF (LWRITE_COORD) THEN
+    ALLOCATE(PX(KNI))
+    ALLOCATE(PY(KNI))
+  ENDIF
+ENDIF
+!
+IF (LWRITE_COORD) THEN
+  !
+  IF (ASSOCIATED(UG%XGRID_FULL_PAR)) THEN
+    CALL GET_GRID_COORD(UG, U, &
+                        KLUOUT,PX=PX,PY=PY,KL=KNI,HGRID=UG%CGRID,PGRID_PAR=UG%XGRID_FULL_PAR)
+  ELSEIF (ASSOCIATED(UG%XGRID_PAR)) THEN
+    CALL GET_GRID_COORD(UG, U, &
+                        KLUOUT,PX=PX,PY=PY,KL=KNI,HGRID=UG%CGRID,PGRID_PAR=UG%XGRID_PAR)
+  ENDIF
+  !
+ELSEIF ( UG%CGRID.EQ.'CONF PROJ '.OR. UG%CGRID.EQ.'CARTESIAN '.OR. &
+         UG%CGRID.EQ.'LONLAT REG' ) THEN
+  !
+  IF (ASSOCIATED(UG%XGRID_FULL_PAR)) THEN
+    CALL GET_GRID_COORD(UG, U, &
+                        KLUOUT,PX=ZXX,PY=ZYY,KL=KNI,HGRID=UG%CGRID,PGRID_PAR=UG%XGRID_FULL_PAR)
+  ELSEIF (ASSOCIATED(UG%XGRID_PAR)) THEN
+    CALL GET_GRID_COORD(UG, U, &
+                        KLUOUT,PX=ZXX,PY=ZYY,KL=KNI,HGRID=UG%CGRID,PGRID_PAR=UG%XGRID_PAR)
+  ENDIF
+  !
+  IF (ASSOCIATED(PX)) THEN
+    DO J=1,SIZE(PX)
+      PX(J)=ZXX(J)
+    ENDDO
+  ENDIF
+  IF (ASSOCIATED(PY)) THEN
+    DO J=1,SIZE(PY)
+      PY(J)=ZYY((J-1)*(KNI/SIZE(PY))+1)
+    ENDDO
+  ENDIF
+!
+ELSEIF(UG%CGRID.EQ.'IGN       ')THEN
+  !
+  IF (ASSOCIATED(UG%XGRID_FULL_PAR)) THEN
+    CALL GET_GRIDTYPE_IGN(UG%XGRID_FULL_PAR,PX=ZXX,PY=ZYY,PXALL=PX,PYALL=PY)
+  ELSEIF (ASSOCIATED(UG%XGRID_PAR)) THEN
+    CALL GET_GRIDTYPE_IGN(UG%XGRID_PAR,PX=ZXX,PY=ZYY,PXALL=PX,PYALL=PY)
+  ENDIF
+  !
+  IF (.NOT.ALLOCATED(NMASK_IGN))THEN
+    ALLOCATE(NMASK_IGN(KNI))
+    L=0
+    DO J=1,SIZE(PY)    
+      DO I=1,SIZE(PX)
+        L=L+1
+        DO K=1,KNI
+          IF((ZXX(K)==PX(I)).AND.(ZYY(K)==PY(J)))THEN
+            NMASK_IGN(K)=L
+          ENDIF
+        ENDDO
+      ENDDO
+    ENDDO
+  ENDIF
+  !
+ENDIF
+!
+!
+IF (PRESENT(KNPATCH)) THEN
+  KDIMS     (INDIMS-1) = KNPATCH
+  HNAME_DIM (INDIMS-1) = 'Number_of_Tile'
+ENDIF
+!
+IF (HPROGRAM/='NOTIME ') THEN
+  KDIMS     (INDIMS) = NF_UNLIMITED
+  HNAME_DIM (INDIMS) = 'time'
+ELSE
+  KDIMS     (INDIMS) = 40
+  HNAME_DIM (INDIMS) = 'char_len'
+ENDIF
+!
+IF (LHOOK) CALL DR_HOOK('OL_DEFINE_DIM',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE OL_DEFINE_DIM

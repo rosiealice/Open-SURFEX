@@ -1,0 +1,324 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+!     #########
+      SUBROUTINE WRITE_DIAG_PGD_TEB_n (DTCO, DGU, U, B, BOP, T, TOP, TPN, &
+                                       HPROGRAM)
+!     #########################################
+!
+!!****  *WRITE_DIAG_PGD_TEB_GARDEN_n* - writes the ISBA physiographic diagnostic fields
+!!
+!!    PURPOSE
+!!    -------
+!!
+!!**  METHOD
+!!    ------
+!!
+!!    EXTERNAL
+!!    --------
+!!
+!!
+!!    IMPLICIT ARGUMENTS
+!!    ------------------
+!!
+!!    REFERENCE
+!!    ---------
+!!
+!!
+!!    AUTHOR
+!!    ------
+!!      V. Masson   *Meteo France*
+!!
+!!    MODIFICATIONS
+!!    -------------
+!!      Original    01/2004 
+!!      Modified    10/2004 by P. Le Moigne: add XZ0REL, XVEGTYPE_PATCH
+!!      Modified    11/2005 by P. Le Moigne: limit length of VEGTYPE_PATCH field names
+!-------------------------------------------------------------------------------
+!
+!*       0.    DECLARATIONS
+!              ------------
+!
+!
+USE MODD_DATA_COVER_n, ONLY : DATA_COVER_t
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+USE MODD_SURF_ATM_n, ONLY : SURF_ATM_t
+USE MODD_BEM_n, ONLY : BEM_t
+USE MODD_BEM_OPTION_n, ONLY : BEM_OPTIONS_t
+USE MODD_TEB_n, ONLY : TEB_t
+USE MODD_TEB_OPTION_n, ONLY : TEB_OPTIONS_t
+USE MODD_TEB_PANEL_n, ONLY : TEB_PANEL_t
+!
+USE MODD_SURF_PAR,       ONLY : XUNDEF
+
+!
+USE MODD_IO_SURF_FA, ONLY : LFANOCOMPACT, LPREP
+!
+USE MODI_INIT_IO_SURF_n
+USE MODI_WRITE_SURF
+USE MODI_END_IO_SURF_n
+!
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+!*       0.1   Declarations of arguments
+!              -------------------------
+!
+!
+TYPE(DATA_COVER_t), INTENT(INOUT) :: DTCO
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+TYPE(SURF_ATM_t), INTENT(INOUT) :: U
+TYPE(BEM_t), INTENT(INOUT) :: B
+TYPE(BEM_OPTIONS_t), INTENT(INOUT) :: BOP
+TYPE(TEB_t), INTENT(INOUT) :: T
+TYPE(TEB_OPTIONS_t), INTENT(INOUT) :: TOP
+TYPE(TEB_PANEL_t), INTENT(INOUT) :: TPN
+!
+ CHARACTER(LEN=6),  INTENT(IN)  :: HPROGRAM ! program calling
+!
+!*       0.2   Declarations of local variables
+!              -------------------------------
+!
+INTEGER           :: IRESP          ! IRESP  : return-code if a problem appears
+ CHARACTER(LEN=12) :: YRECFM         ! Name of the article to be read
+ CHARACTER(LEN=100):: YCOMMENT       ! Comment string
+INTEGER           :: JLAYER         ! loop counter on layers
+!
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!-------------------------------------------------------------------------------
+!
+!         Initialisation for IO
+!
+IF (LHOOK) CALL DR_HOOK('WRITE_DIAG_PGD_TEB_N',0,ZHOOK_HANDLE)
+ CALL INIT_IO_SURF_n(DTCO, DGU, U, &
+                     HPROGRAM,'TOWN  ','TEB   ','WRITE')
+!
+!-------------------------------------------------------------------------------
+!
+!         Geometric parameters
+!
+YRECFM='BLD'
+YCOMMENT='building fraction (-)'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XBLD(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='WALL_O_HOR'
+YCOMMENT='Wall surface over plan area surface (-)'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XWALL_O_HOR(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='BLD_HEIGHT'
+YCOMMENT='Building Height (m)'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XBLD_HEIGHT(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='Z0_TOWN'
+YCOMMENT='Town roughness length (m)'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XZ0_TOWN(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='XROAD_DIR'
+YCOMMENT='Road direction'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XROAD_DIR(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='GARDEN_FRAC'
+YCOMMENT='Garden fraction (-)'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XGARDEN(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='GREENROOF_FRAC'
+YCOMMENT='Greenroof fraction (-)'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XGREENROOF(:),IRESP,HCOMMENT=YCOMMENT)
+ !
+YRECFM='PANEL_FRAC'
+YCOMMENT='Solar Panel fraction (-)'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,TPN%XFRAC_PANEL(:),IRESP,HCOMMENT=YCOMMENT)
+!
+!-------------------------------------------------------------------------------
+!
+!         Building parameters
+!
+YRECFM='ALB_ROOF'
+YCOMMENT='Roof Albedo'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XALB_ROOF(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='EMIS_ROOF'
+YCOMMENT='Roof Emissivity'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XEMIS_ROOF(:),IRESP,HCOMMENT=YCOMMENT)
+!
+DO JLAYER=1,TOP%NROOF_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'HC_ROOF',JLAYER
+  YCOMMENT='Roof Heat Capacity'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XHC_ROOF(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+DO JLAYER=1,TOP%NROOF_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'TC_ROOF',JLAYER
+  YCOMMENT='Roof thermal conductivity'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XTC_ROOF(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+DO JLAYER=1,TOP%NROOF_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'D_ROOF',JLAYER
+  YCOMMENT='Roof layer thickness'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XD_ROOF(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+YRECFM='ROUGH_ROOF'
+YCOMMENT='Roof roughness'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XROUGH_ROOF(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='ALB_WALL'
+YCOMMENT='WALL Albedo'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XALB_WALL(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='EMIS_WALL'
+YCOMMENT='WALL Emissivity'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XEMIS_WALL(:),IRESP,HCOMMENT=YCOMMENT)
+!
+DO JLAYER=1,TOP%NWALL_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'HC_WALL',JLAYER
+  YCOMMENT='WALL Heat Capacity'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XHC_WALL(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+DO JLAYER=1,TOP%NWALL_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'TC_WALL',JLAYER
+  YCOMMENT='WALL thermal conductivity'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XTC_WALL(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+DO JLAYER=1,TOP%NWALL_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'D_WALL',JLAYER
+  YCOMMENT='WALL layer thickness'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XD_WALL(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+YRECFM='ROUGH_WALL'
+YCOMMENT='Wall roughness'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XROUGH_WALL(:),IRESP,HCOMMENT=YCOMMENT)
+!
+!
+YRECFM='RESIDENTIAL'
+YCOMMENT='Residential use fraction'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XRESIDENTIAL(:),IRESP,HCOMMENT=YCOMMENT)
+!-------------------------------------------------------------------------------
+!
+!         Road parameters
+!
+YRECFM='ALB_ROAD'
+YCOMMENT='ROAD Albedo'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XALB_ROAD(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='EMIS_ROAD'
+YCOMMENT='ROAD Emissivity'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XEMIS_ROAD(:),IRESP,HCOMMENT=YCOMMENT)
+!
+DO JLAYER=1,TOP%NROAD_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'HC_ROAD',JLAYER
+  YCOMMENT='ROAD Heat Capacity'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XHC_ROAD(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+DO JLAYER=1,TOP%NROAD_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'TC_ROAD',JLAYER
+  YCOMMENT='ROAD thermal conductivity'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XTC_ROAD(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+DO JLAYER=1,TOP%NROAD_LAYER
+  WRITE(YRECFM,FMT='(A,I1.1)') 'D_ROAD',JLAYER
+  YCOMMENT='ROAD layer thickness'
+  CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XD_ROAD(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+END DO
+!
+!-------------------------------------------------------------------------------
+!
+!         Anthropogneic Fluxes
+!
+YRECFM='H_TRAFFIC'
+YCOMMENT='Traffic Heat Flux'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XH_TRAFFIC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='LE_TRAFFIC'
+YCOMMENT='Traffic Latent Flux'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XLE_TRAFFIC(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='H_INDUSTRY'
+YCOMMENT='INDUSTRY Heat Flux'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XH_INDUSTRY(:),IRESP,HCOMMENT=YCOMMENT)
+!
+YRECFM='LE_INDUSTRY'
+YCOMMENT='INDUSTRY Latent Flux'
+ CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,T%CUR%XLE_INDUSTRY(:),IRESP,HCOMMENT=YCOMMENT)
+!
+!-------------------------------------------------------------------------------
+!
+!         Building Energy Model parameters
+!
+IF (TOP%CBEM=='BEM') THEN
+   YRECFM='N_FLOOR'
+   YCOMMENT='Number of floors'
+   CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,B%CUR%XN_FLOOR(:),IRESP,HCOMMENT=YCOMMENT)
+
+   DO JLAYER=1,BOP%NFLOOR_LAYER
+     WRITE(YRECFM,FMT='(A,I1.1)') 'HC_FLOOR',JLAYER
+     YCOMMENT='FLOOR Heat Capacity'
+     CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,B%CUR%XHC_FLOOR(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+   END DO
+   !
+   DO JLAYER=1,BOP%NFLOOR_LAYER
+     WRITE(YRECFM,FMT='(A,I1.1)') 'TC_FLOOR',JLAYER
+     YCOMMENT='FLOOR thermal conductivity'
+     CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,B%CUR%XTC_FLOOR(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+   END DO
+   !
+   DO JLAYER=1,BOP%NFLOOR_LAYER
+     WRITE(YRECFM,FMT='(A,I1.1)') 'D_FLOOR',JLAYER
+     YCOMMENT='FLOOR layer thickness'
+     CALL WRITE_SURF(DGU, U, &
+                 HPROGRAM,YRECFM,B%CUR%XD_FLOOR(:,JLAYER),IRESP,HCOMMENT=YCOMMENT)
+   END DO
+ENDIF
+!
+!-------------------------------------------------------------------------------
+!
+!         End of IO
+!
+ CALL END_IO_SURF_n(HPROGRAM)
+IF (LHOOK) CALL DR_HOOK('WRITE_DIAG_PGD_TEB_N',1,ZHOOK_HANDLE)
+!
+!
+END SUBROUTINE WRITE_DIAG_PGD_TEB_n

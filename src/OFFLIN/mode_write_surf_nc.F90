@@ -1,0 +1,1812 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+MODULE MODE_WRITE_SURF_NC
+!
+INTERFACE WRITE_SURF0_NC
+        MODULE PROCEDURE WRITE_SURFX0_NC
+        MODULE PROCEDURE WRITE_SURFN0_NC
+        MODULE PROCEDURE WRITE_SURFC0_NC
+        MODULE PROCEDURE WRITE_SURFL0_NC
+END INTERFACE
+INTERFACE WRITE_SURFN_NC
+        MODULE PROCEDURE WRITE_SURFX1_NC
+        MODULE PROCEDURE WRITE_SURFN1_NC
+        MODULE PROCEDURE WRITE_SURFN2_NC
+        MODULE PROCEDURE WRITE_SURFL1_NC
+        MODULE PROCEDURE WRITE_SURFX2_NC
+END INTERFACE
+INTERFACE WRITE_SURFT_NC
+        MODULE PROCEDURE WRITE_SURFT0_NC
+        MODULE PROCEDURE WRITE_SURFT1_NC
+        MODULE PROCEDURE WRITE_SURFT2_NC
+END INTERFACE
+!
+ CONTAINS
+!
+!     #############################################################
+      SUBROUTINE WRITE_SURFX0_NC (DGU, &
+                                  HREC,PFIELD,KRESP,HCOMMENT)
+!     #############################################################
+!
+!!****  *WRITEX0* - routine to read a real scalar
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LDEF
+!
+USE MODD_SURFEX_OMP, ONLY : LWORK0
+!
+USE MODI_IO_BUFF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),  INTENT(IN)  :: HREC     ! name of the article to be read
+REAL,               INTENT(IN)  :: PFIELD   ! the real scalar to be read
+INTEGER,            INTENT(OUT) :: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100), INTENT(IN)  :: HCOMMENT
+!
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(0) :: IDIMS
+INTEGER :: IRET
+INTEGER :: IVAR_ID,JRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX0_NC',0,ZHOOK_HANDLE)
+!
+KRESP=0
+IRET=0
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX0_NC',1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+IF (NID_NC /= 0) THEN        
+  ! 1. Define the variable
+  !----------------------------
+  IF (LDEF) THEN
+    !
+    CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMS, YATT_TITLE, YATT,  IVAR_ID, NF_DOUBLE)
+    !
+  ELSE
+    ! 2. Put variable
+    !----------------------------
+    IRET = NF_INQ_VARID   (NID_NC,HREC,IVAR_ID)
+    IRET = NF_PUT_VAR_DOUBLE (NID_NC,IVAR_ID,PFIELD)
+  ENDIF
+ENDIF
+!
+! 3. Check for errors
+!--------------------
+IF (NID_NC==0 .OR. IRET.NE.NF_NOERR) KRESP=1
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX0_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_SURFX0_NC
+!
+!     #############################################################
+      SUBROUTINE WRITE_SURFN0_NC (DGU, &
+                                  HREC,KFIELD,KRESP,HCOMMENT)
+!     #############################################################
+!
+!!****  *WRITEN0* - routine to read an integer
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC,LDEF
+!
+USE MODD_SURFEX_OMP, ONLY : LWORK0
+!
+USE MODI_IO_BUFF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),  INTENT(IN) :: HREC     ! name of the article to be read
+INTEGER,            INTENT(IN)  :: KFIELD   ! the integer scalar to be read
+INTEGER,            INTENT(OUT) :: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100), INTENT(IN) :: HCOMMENT
+!
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(0) :: IDIMS
+INTEGER              :: IVAR_ID, JRET
+INTEGER :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN0_NC',0,ZHOOK_HANDLE)
+!
+IRET = 0
+KRESP= 0
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN0_NC',1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+! 0. find filename
+! -----------------
+!
+IF (NID_NC /= 0) THEN    
+  ! 1. Find id of the variable
+  !----------------------------
+  IF (LDEF) THEN
+    CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMS, YATT_TITLE, YATT, IVAR_ID, NF_INT)
+    ! 
+    ! 2. Get variable
+    !----------------------------
+  ELSE
+    IRET=NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    IRET=NF_PUT_VAR_INT(NID_NC,IVAR_ID,KFIELD)
+  ENDIF
+ENDIF
+!
+! 3. Check for errors
+!--------------------
+IF (NID_NC==0 .OR. IRET.NE.NF_NOERR) KRESP=1
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN0_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_SURFN0_NC
+!
+!     #############################################################
+      SUBROUTINE WRITE_SURFC0_NC (DGU, &
+                                  HREC,HFIELD,KRESP,HCOMMENT)
+!     #############################################################
+!
+!!****  *WRITEC0* - routine to read a STRING
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LDEF
+!
+USE MODD_SURFEX_OMP, ONLY : LWORK0
+!
+USE MODI_IO_BUFF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),  INTENT(IN)  :: HREC     ! name of the article to be read
+ CHARACTER(LEN=40),  INTENT(IN)  :: HFIELD   ! the integer scalar to be read
+INTEGER,            INTENT(OUT) :: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100), INTENT(IN)  :: HCOMMENT
+!
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(1) :: IDIMS
+ CHARACTER(LEN=1), DIMENSION(:), ALLOCATABLE :: YFIELD
+INTEGER :: IVAR_ID, JRET
+INTEGER :: IRET, J
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFC0_NC',0,ZHOOK_HANDLE)
+!
+KRESP=0
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFC0_NC',1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+IF (NID_NC /= 0) THEN 
+  ! 1. Find id of the variable
+  !----------------------------
+  IF (LDEF) THEN
+    IRET = NF_INQ_DIMID(NID_NC,'char_len',IDIMS(1))
+    !
+    CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMS, YATT_TITLE, YATT, IVAR_ID, NF_CHAR,LEN_TRIM(HFIELD))
+    !
+  ELSE
+    IRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    ! 2. Get variable
+    !----------------------------
+    ALLOCATE(YFIELD(LEN(HFIELD)))
+    DO J=1,LEN(HFIELD)
+      YFIELD(J) = HFIELD(J:J)
+    ENDDO
+    IRET=NF_PUT_VAR_TEXT(NID_NC,IVAR_ID,YFIELD)
+  ENDIF
+ENDIF
+!
+! 3. Check for errors
+!--------------------
+IF (NID_NC==0 .OR. IRET.NE.NF_NOERR) KRESP=1
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFC0_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_SURFC0_NC
+!
+!     #############################################################
+      SUBROUTINE WRITE_SURFL0_NC (DGU, &
+                                  HREC,OFIELD,KRESP,HCOMMENT)
+!     #############################################################
+!
+!!****  *WRITEL0* - routine to read a logical
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC,LDEF
+!
+USE MODD_SURFEX_OMP, ONLY : LWORK0
+!
+USE MODI_IO_BUFF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE MODI_HANDLE_ERR
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),   INTENT(IN) :: HREC     ! name of the article to be read
+LOGICAL,             INTENT(IN) :: OFIELD   ! array containing the data field
+INTEGER,             INTENT(OUT):: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100),  INTENT(IN) :: HCOMMENT
+!
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(0) :: IDIMS
+ CHARACTER(LEN=1)    :: YFIELD   ! work array read in the file
+INTEGER              :: IVAR_ID
+INTEGER :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFL0_NC',0,ZHOOK_HANDLE)
+!
+IF (OFIELD) THEN
+  YFIELD = 'T'
+ELSE
+  YFIELD = 'F'
+ENDIF
+!
+IRET=0
+KRESP=0
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFL0_NC',1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+IF (NID_NC /= 0) THEN        
+  !
+  IF (LDEF) THEN
+    CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMS, YATT_TITLE, YATT, IVAR_ID, NF_CHAR)
+    !
+  ELSE
+    IRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    ! 2. Put variable
+    !----------------------------
+    !
+    IRET=NF_PUT_VAR_TEXT(NID_NC,IVAR_ID,YFIELD)
+    !
+    CALL HANDLE_ERR(IRET,HREC)
+  ENDIF
+  !
+ENDIF
+!
+! 3. Check for errors
+!--------------------
+IF (NID_NC==0 .OR. IRET.NE.NF_NOERR) KRESP=1
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFL0_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_SURFL0_NC
+!
+!
+!     #############################################################
+      SUBROUTINE WRITE_SURFX1_NC (DGU, &
+                                  HREC,PFIELD,KRESP,HCOMMENT,HDIR,HNAM_DIM)
+!     #############################################################
+!
+!!****  *WRITEX1* - routine to fill a real 1D array for the externalised surface 
+! 
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_SURFEX_MPI, ONLY : NRANK, NPIO, NPROC, NCOMM
+!
+USE MODD_SURFEX_OMP, ONLY : CWORK0, NWORK0, NWORKVAR, NWORKB, NWORKDIMS, &
+                            NWORKIDS, NWORKLEN, LWORK0, NBLOCK
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LMASK, NMASK, NMASK_IGN, CFILEOUT_NC,LDEF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE MODI_IO_BUFF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+#ifdef SFX_MPI
+INCLUDE "mpif.h"
+#endif
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),   INTENT(IN) :: HREC     ! name of the article to be read
+REAL, DIMENSION(:),  INTENT(IN) :: PFIELD   ! array containing the data field
+INTEGER,             INTENT(OUT):: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100),  INTENT(IN) :: HCOMMENT
+ CHARACTER(LEN=1),    INTENT(IN) :: HDIR     ! type of field :
+                                            ! 'H' : field with
+                                            !       horizontal spatial dim.
+                                            ! '-' : no horizontal dim.
+ CHARACTER(LEN=16), OPTIONAL,  INTENT(IN) :: HNAM_DIM                                           
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(2) :: IDIMIDS
+INTEGER, DIMENSION(2) :: IDIMLEN
+ CHARACTER(LEN=100)    :: YNAME
+ CHARACTER(LEN=16)     :: YNAM_DIM
+INTEGER               :: IVAR_ID, JDIM, INDIMS
+INTEGER               :: JRET
+INTEGER               :: INFOMPI
+INTEGER,DIMENSION(5)  :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX1_NC',0,ZHOOK_HANDLE)
+!
+!$OMP BARRIER
+!
+KRESP = 0
+!
+IRET(:) = 0
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+IF (PRESENT(HNAM_DIM)) THEN
+  YNAM_DIM = HNAM_DIM
+ELSE
+  YNAM_DIM = "Number_of_points"
+ENDIF
+!
+!$OMP SINGLE
+!
+NWORKDIMS = 0
+NWORKLEN(:) = 0
+ CWORK0 = ""
+NWORKB=0
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+!
+!$OMP END SINGLE
+!
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK("WRITE_SURF_NC:WRITE_SURFX1_NC",1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+IF (NRANK==NPIO) THEN 
+  !
+  IF (NID_NC /= 0) THEN
+    !
+!$OMP SINGLE
+    !
+    ! 0. find filename
+    ! -----------------
+    !
+    IRET(1) = NF_INQ_NDIMS(NID_NC,NWORKDIMS)
+    IRET(2) = NF_INQ_DIMID(NID_NC,TRIM(YNAM_DIM),NWORKIDS(1))
+    IF (IRET(2)/=0) THEN
+      IRET(2) = NF_INQ_DIMID(NID_NC,'lon',NWORKIDS(1))
+      IF (IRET(2)/=0) THEN
+        IRET(2) = NF_INQ_DIMID(NID_NC,'xx',NWORKIDS(1))
+        IRET(3) = NF_INQ_DIMID(NID_NC,'yy',NWORKIDS(2))
+      ELSE
+        IRET(3) = NF_INQ_DIMID(NID_NC,'lat',NWORKIDS(2))
+      ENDIF
+      NWORK0=NF_INQ_DIMLEN(NID_NC,NWORKIDS(2),NWORKLEN(2))
+    ENDIF
+    NWORK0=NF_INQ_DIMLEN(NID_NC,NWORKIDS(1),NWORKLEN(1))
+    !
+    IRET(4)=NF_INQ_DIMNAME(NID_NC,NWORKIDS(1),CWORK0)
+    !
+    DO JRET=1,4
+      IF (NWORK0==0 .OR. IRET(JRET).NE.NF_NOERR) NWORKB=1
+    ENDDO
+    !
+!$OMP END SINGLE
+    !
+    INDIMS = NWORKDIMS
+    IDIMIDS = NWORKIDS(1:2)
+    IDIMLEN = NWORKLEN(1:2)
+    YNAME = CWORK0    
+    !
+  ELSE
+    INDIMS = 0
+    IDIMIDS(:) = 0
+    IDIMLEN(:) = 0
+    YNAME = ""    
+  ENDIF
+  !
+ELSE
+  INDIMS = 0
+  IDIMIDS(:) = 0
+  IDIMLEN(:) = 0
+  YNAME = ""    
+ENDIF
+!
+KRESP = NWORKB
+!
+!$OMP BARRIER
+!
+#ifdef SFX_MPI
+IF (NPROC>1) THEN
+!$OMP SINGLE
+  CALL MPI_BCAST(YNAME,LEN(YNAME),MPI_CHARACTER,NPIO,NCOMM,INFOMPI)
+  CALL MPI_BCAST(INDIMS,KIND(INDIMS)/4,MPI_INTEGER,NPIO,NCOMM,INFOMPI)
+  CALL MPI_BCAST(IDIMLEN,KIND(IDIMLEN)*SIZE(IDIMLEN)/4,MPI_INTEGER,NPIO,NCOMM,INFOMPI)  
+!$OMP END SINGLE
+ENDIF
+#endif
+!
+IF (YNAME.NE.'lon' .AND. YNAME.NE.'xx') THEN
+  IF (LDEF) THEN
+    IF (NRANK==NPIO) THEN
+!$OMP SINGLE
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:1), YATT_TITLE, YATT, NWORKB, NF_DOUBLE,1)
+!$OMP END SINGLE
+      IVAR_ID = NWORKB
+    ENDIF
+  ELSE
+    JRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    CALL WRITE_DATAX1_NC(IDIMLEN(1),INDIMS)
+  ENDIF
+ELSE
+  IF (LDEF) THEN
+    IF (NRANK==NPIO) THEN
+!$OMP SINGLE          
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:2), YATT_TITLE, YATT, NWORKB, NF_DOUBLE)
+!$OMP END SINGLE
+      IVAR_ID = NWORKB
+    ENDIF 
+  ELSE  
+    JRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    CALL WRITE_DATAX1_NC(IDIMLEN(1)*IDIMLEN(2),INDIMS)
+  ENDIF
+ENDIF
+!
+!$OMP BARRIER
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX1_NC',1,ZHOOK_HANDLE)
+!
+ CONTAINS
+!
+SUBROUTINE WRITE_DATAX1_NC(KDIM,KNDIMS)
+!
+USE MODD_SURF_PAR, ONLY : XUNDEF
+!
+USE MODI_GATHER_AND_WRITE_MPI
+USE MODI_UNPACK_SAME_RANK
+USE MODI_HANDLE_ERR
+!
+IMPLICIT NONE
+!
+INTEGER, INTENT(IN) :: KDIM
+INTEGER, INTENT(IN) :: KNDIMS
+!
+REAL, DIMENSION(KDIM) :: ZTAB1D
+REAL, DIMENSION(KDIM) :: ZWORK_IGN
+!
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX1_NC:WRITE_DATAX1_NC',0,ZHOOK_HANDLE)
+!
+ZTAB1D(:) = XUNDEF
+!
+IF (HDIR=='-') THEN
+  IF (NRANK==NPIO) ZTAB1D(1:SIZE(PFIELD)) = PFIELD(:)
+ELSEIF(.NOT.ALLOCATED(NMASK_IGN))THEN
+  IF (LMASK) THEN
+    CALL GATHER_AND_WRITE_MPI(PFIELD,ZTAB1D,NMASK)
+  ELSE 
+    CALL GATHER_AND_WRITE_MPI(PFIELD,ZTAB1D)
+  ENDIF
+ELSE
+  !ign grid 
+  IF (LMASK) THEN
+    CALL GATHER_AND_WRITE_MPI(PFIELD,ZWORK_IGN(1:SIZE(NMASK_IGN)),NMASK)
+  ELSE 
+    CALL GATHER_AND_WRITE_MPI(PFIELD,ZWORK_IGN(1:SIZE(NMASK_IGN)))
+  ENDIF
+  CALL UNPACK_SAME_RANK(NMASK_IGN,ZWORK_IGN(1:SIZE(NMASK_IGN)),ZTAB1D)
+ENDIF
+!
+IF (NRANK==NPIO) THEN 
+!$OMP SINGLE
+  IRET(5)=NF_PUT_VAR_DOUBLE(NID_NC,IVAR_ID,ZTAB1D)
+  CALL HANDLE_ERR(IRET(5),HREC)  
+!$OMP END SINGLE
+ENDIF
+
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX1_NC:WRITE_DATAX1_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_DATAX1_NC
+!
+END SUBROUTINE WRITE_SURFX1_NC
+!
+!     #############################################################
+      SUBROUTINE WRITE_SURFX2_NC (DGU, &
+                                  HREC,PFIELD,KRESP,HCOMMENT,HDIR,HNAM_DIM)
+!     #############################################################
+!
+!!****  *WRITEX2* - routine to fill a real 2D array for the externalised surface 
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_SURFEX_MPI, ONLY : NRANK, NPIO, NPROC, NCOMM
+!
+USE MODD_SURFEX_OMP, ONLY : CWORK0, NWORK0, NWORKVAR, NWORKB, NWORKDIMS, &
+                            NWORKIDS, NWORKLEN, NBLOCK, LWORK0
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LMASK, NMASK, NMASK_IGN, LDEF
+!
+USE MODI_IO_BUFF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+#ifdef SFX_MPI
+INCLUDE "mpif.h"
+#endif
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),    INTENT(IN) :: HREC     ! name of the article to be read
+REAL, DIMENSION(:,:), INTENT(IN) :: PFIELD   ! array containing the data field
+INTEGER,              INTENT(OUT):: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100),   INTENT(IN) :: HCOMMENT
+ CHARACTER(LEN=1),     INTENT(IN) :: HDIR     ! type of field :
+                                             ! 'H' : field with
+                                             !       horizontal spatial dim.
+                                             ! '-' : no horizontal dim.
+ CHARACTER(LEN=16), OPTIONAL,  INTENT(IN) :: HNAM_DIM                                              
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(3) :: IDIMIDS
+INTEGER, DIMENSION(3) :: IDIMLEN
+ CHARACTER(LEN=100)    :: YNAME
+ CHARACTER(LEN=16)     :: YNAM_DIM
+INTEGER               :: IVAR_ID, JDIM, INDIMS
+INTEGER               :: JRET
+INTEGER               :: INFOMPI
+INTEGER, DIMENSION(5) :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX2_NC',0,ZHOOK_HANDLE)
+!
+KRESP = 0
+!
+IRET(:) = 0
+!
+!$OMP SINGLE
+!
+NWORKDIMS = 0
+NWORKLEN(:) = 0
+ CWORK0 = ""
+NWORKB=0
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+!
+!$OMP END SINGLE
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN2_NC',1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+IF (PRESENT(HNAM_DIM)) THEN
+  YNAM_DIM = HNAM_DIM
+ELSE
+  YNAM_DIM = "Number_of_Tile"
+ENDIF
+!
+IF (NRANK==NPIO) THEN
+  !
+  IF (NID_NC /= 0) THEN 
+    !    
+    ! 0. find filename
+    ! -----------------
+    !
+!$OMP SINGLE
+    !
+    IRET(1) = NF_INQ_NDIMS(NID_NC,NWORKDIMS)
+    IF ( TRIM(YNAM_DIM) == "Nemis_snap" ) THEN
+      IRET(2) = NF_INQ_DIMID(NID_NC,"Nsnap_temp",NWORKIDS(1))
+    ELSE
+      IRET(2) = NF_INQ_DIMID(NID_NC,"Number_of_points",NWORKIDS(1))
+    ENDIF
+    IF (IRET(2)==0) THEN
+      IRET(3) = NF_INQ_DIMID(NID_NC,TRIM(YNAM_DIM),NWORKIDS(2))
+    ELSE
+      IRET(2) = NF_INQ_DIMID(NID_NC,'lon',NWORKIDS(1))
+      IF (IRET(2)/=0) THEN
+        IRET(2) = NF_INQ_DIMID(NID_NC,'xx',NWORKIDS(1))
+        IRET(3) = NF_INQ_DIMID(NID_NC,'yy',NWORKIDS(2))
+      ELSE
+        IRET(3) = NF_INQ_DIMID(NID_NC,'lat',NWORKIDS(2))
+      ENDIF
+      IRET(4) = NF_INQ_DIMID(NID_NC,TRIM(YNAM_DIM),NWORKIDS(3))
+      NWORK0=NF_INQ_DIMLEN(NID_NC,NWORKIDS(3),NWORKLEN(3))
+    ENDIF           
+    DO JDIM=1,2
+      NWORK0=NF_INQ_DIMLEN(NID_NC,NWORKIDS(JDIM),NWORKLEN(JDIM))
+    ENDDO
+    !
+    IRET(5)=NF_INQ_DIMNAME(NID_NC,NWORKIDS(1),CWORK0)
+    !
+    DO JRET=1,5
+      IF (NWORK0==0 .OR. IRET(JRET).NE.NF_NOERR) NWORKB=1
+    ENDDO
+    !
+!$OMP END SINGLE
+    !
+    INDIMS = NWORKDIMS
+    IDIMIDS = NWORKIDS(1:3)
+    IDIMLEN = NWORKLEN(1:3)
+    YNAME = CWORK0
+    !
+  ELSE
+    INDIMS = 0
+    IDIMIDS(:) = 0
+    IDIMLEN(:) = 0
+    YNAME = ""
+  ENDIF
+  !
+ELSE
+  INDIMS = 0
+  IDIMIDS(:) = 0
+  IDIMLEN(:) = SIZE(PFIELD,2)
+  YNAME = ""        
+ENDIF
+!
+KRESP = NWORKB
+!
+!$OMP BARRIER
+!
+#ifdef SFX_MPI
+IF (NPROC>1) THEN
+!$OMP SINGLE
+  CALL MPI_BCAST(YNAME,LEN(YNAME),MPI_CHARACTER,NPIO,NCOMM,INFOMPI)
+  CALL MPI_BCAST(INDIMS,KIND(INDIMS)/4,MPI_INTEGER,NPIO,NCOMM,INFOMPI)
+  CALL MPI_BCAST(IDIMLEN,KIND(IDIMLEN)*SIZE(IDIMLEN)/4,MPI_INTEGER,NPIO,NCOMM,INFOMPI)
+!$OMP END SINGLE
+ENDIF
+#endif
+!
+IF (YNAME .NE. 'lon' .AND. YNAME .NE. 'xx') THEN
+  IF (LDEF) THEN
+    IF (NRANK==NPIO) THEN
+!$OMP SINGLE
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:2), YATT_TITLE, YATT, NWORKB, NF_DOUBLE)
+!$OMP END SINGLE
+      IVAR_ID = NWORKB
+    ENDIF
+  ELSE
+    JRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    CALL WRITE_DATAX2_NC(IDIMLEN(1),IDIMLEN(2),INDIMS)
+  ENDIF
+ELSE
+  IF (LDEF) THEN
+    IF (NRANK==NPIO) THEN
+!$OMP SINGLE      
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:3), YATT_TITLE, YATT, NWORKB, NF_DOUBLE)
+!$OMP END SINGLE
+      IVAR_ID = NWORKB
+    ENDIF
+  ELSE
+    JRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    CALL WRITE_DATAX2_NC(IDIMLEN(1)*IDIMLEN(2),IDIMLEN(3),INDIMS)
+  ENDIF
+ENDIF
+!
+!$OMP BARRIER
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX2_NC',1,ZHOOK_HANDLE)
+!
+ CONTAINS
+!
+SUBROUTINE WRITE_DATAX2_NC(KDIM1,KDIM2,KNDIMS)
+!
+USE MODD_SURF_PAR, ONLY : XUNDEF
+!
+USE MODI_GATHER_AND_WRITE_MPI
+USE MODI_UNPACK_SAME_RANK
+USE MODI_HANDLE_ERR
+!
+IMPLICIT NONE
+!
+INTEGER, INTENT(IN) :: KDIM1
+INTEGER, INTENT(IN) :: KDIM2
+INTEGER, INTENT(IN) :: KNDIMS
+!
+REAL, DIMENSION(KDIM1,KDIM2) :: ZTAB2D    ! work array read in the file
+REAL, DIMENSION(KDIM1,SIZE(PFIELD,2)) :: ZWORK_IGN ! work array read in the file
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX2_NC:WRITE_DATAX2_NC',0,ZHOOK_HANDLE)
+!
+ZTAB2D = XUNDEF
+!
+IF(.NOT.ALLOCATED(NMASK_IGN))THEN
+  IF (LMASK) THEN
+    CALL GATHER_AND_WRITE_MPI(PFIELD,ZTAB2D(:,1:SIZE(PFIELD,2)),NMASK)
+  ELSE 
+    CALL GATHER_AND_WRITE_MPI(PFIELD,ZTAB2D(:,1:SIZE(PFIELD,2)))
+  ENDIF
+ELSE
+  !ign grid 
+  IF (LMASK) THEN
+    CALL GATHER_AND_WRITE_MPI(PFIELD,ZWORK_IGN(1:SIZE(NMASK_IGN),:),NMASK)
+  ELSE 
+    CALL GATHER_AND_WRITE_MPI(PFIELD,ZWORK_IGN(1:SIZE(NMASK_IGN),:))
+  ENDIF
+  CALL UNPACK_SAME_RANK(NMASK_IGN,ZWORK_IGN(1:SIZE(NMASK_IGN),:),ZTAB2D(:,1:SIZE(PFIELD,2)))
+ENDIF
+!
+IF (NRANK==NPIO) THEN
+!$OMP SINGLE
+  IRET(5)=NF_PUT_VAR_DOUBLE(NID_NC,IVAR_ID,ZTAB2D)
+  CALL HANDLE_ERR(IRET(5),HREC)  
+!$OMP END SINGLE
+ENDIF
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFX2_NC:WRITE_DATAX2_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_DATAX2_NC
+!
+END SUBROUTINE WRITE_SURFX2_NC
+
+!     #############################################################
+      SUBROUTINE WRITE_SURFN1_NC (DGU, &
+                                  HREC,KFIELD,KRESP,HCOMMENT,HDIR,HNAM_DIM)
+!     #############################################################
+!
+!!****  *WRITEN0* - routine to read an integer
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_SURFEX_MPI, ONLY : NRANK, NPIO, NPROC, NCOMM
+!
+USE MODD_SURFEX_OMP, ONLY : CWORK0, NWORK0, NWORKVAR, NWORKB, NWORKDIMS, &
+                            NWORKIDS, NWORKLEN, LWORK0
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LMASK, NMASK, NMASK_IGN, CFILEOUT_NC, LDEF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE MODI_IO_BUFF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+#ifdef SFX_MPI
+INCLUDE "mpif.h"
+#endif
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),      INTENT(IN)  :: HREC     ! name of the article to be read
+INTEGER, DIMENSION(:),  INTENT(IN)  :: KFIELD   ! the integer scalar to be read
+INTEGER,                INTENT(OUT) :: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100),     INTENT(IN)  :: HCOMMENT
+ CHARACTER(LEN=1),       INTENT(IN) :: HDIR     ! type of field :
+                                               ! 'H' : field with
+                                               !       horizontal spatial dim.
+                                               ! '-' : no horizontal dim.
+ CHARACTER(LEN=16), OPTIONAL,  INTENT(IN) :: HNAM_DIM  
+! 
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(2) :: IDIMIDS
+INTEGER, DIMENSION(2) :: IDIMLEN
+ CHARACTER(LEN=100)    :: YNAME
+ CHARACTER(LEN=16)     :: YNAM_DIM
+INTEGER               :: IVAR_ID, JDIM
+INTEGER               :: JRET
+INTEGER               :: INFOMPI
+INTEGER,DIMENSION(5)  :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN1_NC',0,ZHOOK_HANDLE)
+!
+KRESP = 0
+!
+IRET(:) = 0
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+IF (PRESENT(HNAM_DIM)) THEN
+  YNAM_DIM = HNAM_DIM
+ELSE
+  YNAM_DIM = "Number_of_points"
+ENDIF
+!
+!$OMP SINGLE
+!
+NWORKLEN(:) = 0
+ CWORK0 = ""
+NWORKB=0
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+!
+!$OMP END SINGLE
+!
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK("WRITE_SURF_NC:WRITE_SURFN1_NC",1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+IF (NRANK==NPIO) THEN 
+  !
+  IF (NID_NC /= 0) THEN
+    !
+!$OMP SINGLE
+    !
+    ! 0. find filename
+    ! -----------------
+    !
+    IRET(2) = NF_INQ_DIMID(NID_NC,TRIM(YNAM_DIM),NWORKIDS(1))
+    IF (IRET(2)/=0) THEN
+      IRET(2) = NF_INQ_DIMID(NID_NC,'lon',NWORKIDS(1))
+      IF (IRET(2)/=0) THEN
+        IRET(2) = NF_INQ_DIMID(NID_NC,'xx',NWORKIDS(1))
+        IRET(3) = NF_INQ_DIMID(NID_NC,'yy',NWORKIDS(2))
+      ELSE
+        IRET(3) = NF_INQ_DIMID(NID_NC,'lat',NWORKIDS(2))
+      ENDIF
+      NWORK0=NF_INQ_DIMLEN(NID_NC,NWORKIDS(2),NWORKLEN(2))
+    ENDIF
+    NWORK0=NF_INQ_DIMLEN(NID_NC,NWORKIDS(1),NWORKLEN(1))
+    !
+    IRET(4)=NF_INQ_DIMNAME(NID_NC,NWORKIDS(1),CWORK0)
+    !
+    DO JRET=1,4
+      IF (NWORK0==0 .OR. IRET(JRET).NE.NF_NOERR) NWORKB=1
+    ENDDO
+    !
+!$OMP END SINGLE
+    !
+    IDIMIDS = NWORKIDS(1:2)
+    IDIMLEN = NWORKLEN(1:2)
+    YNAME = CWORK0    
+    !
+  ELSE
+    IDIMIDS(:) = 0
+    IDIMLEN(:) = 0
+    YNAME = ""    
+  ENDIF
+  !
+ELSE
+  IDIMIDS(:) = 0
+  IDIMLEN(:) = 0
+  YNAME = ""    
+ENDIF
+!
+KRESP = NWORKB
+!
+!$OMP BARRIER
+!
+#ifdef SFX_MPI
+IF (NPROC>1) THEN
+!$OMP SINGLE
+  CALL MPI_BCAST(YNAME,LEN(YNAME),MPI_CHARACTER,NPIO,NCOMM,INFOMPI)
+  CALL MPI_BCAST(IDIMLEN,KIND(IDIMLEN)*SIZE(IDIMLEN)/4,MPI_INTEGER,NPIO,NCOMM,INFOMPI)  
+!$OMP END SINGLE
+ENDIF
+#endif
+!
+IF (YNAME.NE.'lon' .AND. YNAME.NE.'xx') THEN
+  IF (LDEF) THEN
+    IF (NRANK==NPIO) THEN
+!$OMP SINGLE
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:1), YATT_TITLE, YATT, NWORKB, NF_INT)
+!$OMP END SINGLE
+      IVAR_ID = NWORKB
+    ENDIF
+  ELSE
+    JRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    CALL WRITE_DATAN1_NC(IDIMLEN(1))
+  ENDIF
+ELSE
+  IF (LDEF) THEN
+    IF (NRANK==NPIO) THEN
+!$OMP SINGLE          
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:2), YATT_TITLE, YATT, NWORKB, NF_INT)
+!$OMP END SINGLE
+      IVAR_ID = NWORKB
+    ENDIF  
+  ELSE
+    JRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)    
+    CALL WRITE_DATAN1_NC(IDIMLEN(1)*IDIMLEN(2))
+  ENDIF
+ENDIF
+!
+!$OMP BARRIER
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN1_NC',1,ZHOOK_HANDLE)
+!
+ CONTAINS
+!
+SUBROUTINE WRITE_DATAN1_NC(KDIM)
+!
+USE MODD_SURF_PAR, ONLY : NUNDEF
+!
+USE MODI_GATHER_AND_WRITE_MPI
+USE MODI_UNPACK_SAME_RANK
+USE MODI_HANDLE_ERR
+!
+IMPLICIT NONE
+!
+INTEGER, INTENT(IN) :: KDIM
+!
+INTEGER, DIMENSION(KDIM) :: ITAB1D
+INTEGER, DIMENSION(KDIM) :: IWORK_IGN
+!
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN1_NC:WRITE_DATAN1_NC',0,ZHOOK_HANDLE)
+!
+ITAB1D(:) = NUNDEF
+!
+IF (HDIR=='-') THEN
+  IF ( NRANK==NPIO ) ITAB1D(1:SIZE(KFIELD)) = KFIELD(:)
+ELSEIF(.NOT.ALLOCATED(NMASK_IGN))THEN
+  IF (LMASK) THEN
+    CALL GATHER_AND_WRITE_MPI(KFIELD,ITAB1D,NMASK)
+  ELSE 
+    CALL GATHER_AND_WRITE_MPI(KFIELD,ITAB1D)
+  ENDIF
+ELSE
+  !ign grid 
+  IF (LMASK) THEN
+    CALL GATHER_AND_WRITE_MPI(KFIELD,IWORK_IGN(1:SIZE(NMASK_IGN)),NMASK)
+  ELSE 
+    CALL GATHER_AND_WRITE_MPI(KFIELD,IWORK_IGN(1:SIZE(NMASK_IGN)))
+  ENDIF
+  CALL UNPACK_SAME_RANK(NMASK_IGN,IWORK_IGN(1:SIZE(NMASK_IGN)),ITAB1D)
+ENDIF
+!
+IF (NRANK==NPIO) THEN 
+!$OMP SINGLE
+  IRET(5)=NF_PUT_VAR_INT(NID_NC,IVAR_ID,ITAB1D)
+  CALL HANDLE_ERR(IRET(5),HREC)  
+!$OMP END SINGLE
+ENDIF
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN1_NC:WRITE_DATAN1_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_DATAN1_NC
+!
+END SUBROUTINE WRITE_SURFN1_NC
+!
+
+!     #############################################################
+      SUBROUTINE WRITE_SURFN2_NC (DGU, &
+                                  HREC,KFIELD,KRESP,HCOMMENT,HDIR,HNAM_DIM)
+!     #############################################################
+!
+!!****  *WRITEN0* - routine to read an integer
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_SURFEX_MPI, ONLY : NRANK, NPIO, NPROC, NCOMM
+!
+USE MODD_SURFEX_OMP, ONLY : CWORK0, NWORK0, NWORKVAR, NWORKB, NWORKDIMS, &
+                            NWORKIDS, NWORKLEN, NBLOCK, LWORK0
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LMASK, NMASK, NMASK_IGN, LDEF
+!
+USE MODI_IO_BUFF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+#ifdef SFX_MPI
+INCLUDE "mpif.h"
+#endif
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),      INTENT(IN)  :: HREC     ! name of the article to be read
+INTEGER, DIMENSION(:,:),  INTENT(IN)  :: KFIELD   ! the integer scalar to be read
+INTEGER,                INTENT(OUT) :: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100),     INTENT(IN)  :: HCOMMENT
+ CHARACTER(LEN=1),       INTENT(IN) :: HDIR     ! type of field :
+                                               ! 'H' : field with
+                                               !       horizontal spatial dim.
+                                               ! '-' : no horizontal dim.
+ CHARACTER(LEN=16), OPTIONAL,  INTENT(IN) :: HNAM_DIM                                                 
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(3) :: IDIMIDS
+INTEGER, DIMENSION(3) :: IDIMLEN
+ CHARACTER(LEN=100)    :: YNAME
+ CHARACTER(LEN=16)     :: YNAM_DIM
+INTEGER               :: IVAR_ID, JDIM, INDIMS
+INTEGER               :: JRET
+INTEGER               :: INFOMPI
+INTEGER, DIMENSION(5) :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN2_NC',0,ZHOOK_HANDLE)
+!
+KRESP = 0
+!
+IRET(:) = 0
+!
+!$OMP SINGLE
+!
+NWORKDIMS = 0
+NWORKLEN(:) = 0
+ CWORK0 = ""
+NWORKB=0
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+!
+!$OMP END SINGLE
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN2_NC',1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+IF (PRESENT(HNAM_DIM)) THEN
+  YNAM_DIM = HNAM_DIM
+ELSE
+  YNAM_DIM = "Number_of_points"
+ENDIF
+!
+IF (NRANK==NPIO) THEN
+  !
+  IF (NID_NC /= 0) THEN 
+    !    
+    ! 0. find filename
+    ! -----------------
+    !
+!$OMP SINGLE
+    !
+    IRET(1) = NF_INQ_NDIMS(NID_NC,NWORKDIMS)
+    IRET(2) = NF_INQ_DIMID(NID_NC,TRIM(YNAM_DIM),NWORKIDS(1))
+    IF (IRET(2)==0) THEN
+      IRET(3) = NF_INQ_DIMID(NID_NC,'Number_of_Tile',NWORKIDS(2))
+    ELSE
+      IRET(2) = NF_INQ_DIMID(NID_NC,'lon',NWORKIDS(1))
+      IF (IRET(2)/=0) THEN
+        IRET(2) = NF_INQ_DIMID(NID_NC,'xx',NWORKIDS(1))
+        IRET(3) = NF_INQ_DIMID(NID_NC,'yy',NWORKIDS(2))
+      ELSE
+        IRET(3) = NF_INQ_DIMID(NID_NC,'lat',NWORKIDS(2))
+      ENDIF
+      IRET(4) = NF_INQ_DIMID(NID_NC,'Number_of_Tile',NWORKIDS(3))
+      NWORK0=NF_INQ_DIMLEN(NID_NC,NWORKIDS(3),NWORKLEN(3))
+    ENDIF           
+    DO JDIM=1,2
+      NWORK0=NF_INQ_DIMLEN(NID_NC,NWORKIDS(JDIM),NWORKLEN(JDIM))
+    ENDDO
+    !
+    IRET(5)=NF_INQ_DIMNAME(NID_NC,NWORKIDS(1),CWORK0)
+    !
+    DO JRET=1,5
+      IF (NWORK0==0 .OR. IRET(JRET).NE.NF_NOERR) NWORKB=1
+    ENDDO
+    !
+!$OMP END SINGLE
+    !
+    INDIMS = NWORKDIMS
+    IDIMIDS = NWORKIDS(1:3)
+    IDIMLEN = NWORKLEN(1:3)
+    YNAME = CWORK0
+    !
+  ELSE
+    INDIMS = 0
+    IDIMIDS(:) = 0
+    IDIMLEN(:) = 0
+    YNAME = ""
+  ENDIF
+  !
+ELSE
+  INDIMS = 0
+  IDIMIDS(:) = 0
+  IDIMLEN(:) = SIZE(KFIELD,2)
+  YNAME = ""        
+ENDIF
+!
+KRESP = NWORKB
+!
+!$OMP BARRIER
+!
+#ifdef SFX_MPI
+IF (NPROC>1) THEN
+!$OMP SINGLE
+  CALL MPI_BCAST(YNAME,LEN(YNAME),MPI_CHARACTER,NPIO,NCOMM,INFOMPI)
+  CALL MPI_BCAST(INDIMS,KIND(INDIMS)/4,MPI_INTEGER,NPIO,NCOMM,INFOMPI)
+  CALL MPI_BCAST(IDIMLEN,KIND(IDIMLEN)*SIZE(IDIMLEN)/4,MPI_INTEGER,NPIO,NCOMM,INFOMPI)  
+!$OMP END SINGLE
+ENDIF
+#endif
+!
+IF (YNAME .NE. 'lon' .AND. YNAME .NE. 'xx') THEN
+  IF (LDEF) THEN
+    IF (NRANK==NPIO) THEN
+!$OMP SINGLE
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:2), YATT_TITLE, YATT, NWORKB, NF_INT)
+!$OMP END SINGLE
+      IVAR_ID = NWORKB
+    ENDIF
+  ELSE
+    JRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)
+    CALL WRITE_DATAN2_NC(IDIMLEN(1),IDIMLEN(2),INDIMS)
+  ENDIF
+ELSE
+  IF (LDEF) THEN
+    IF (NRANK==NPIO) THEN
+!$OMP SINGLE          
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:3), YATT_TITLE, YATT, NWORKB, NF_INT)
+!$OMP END SINGLE
+      IVAR_ID = NWORKB
+    ENDIF 
+  ELSE
+    JRET = NF_INQ_VARID(NID_NC,HREC,IVAR_ID)    
+    CALL WRITE_DATAN2_NC(IDIMLEN(1)*IDIMLEN(2),IDIMLEN(3),INDIMS)
+  ENDIF
+ENDIF
+!
+!$OMP BARRIER
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN2_NC',1,ZHOOK_HANDLE)
+!
+ CONTAINS
+!
+SUBROUTINE WRITE_DATAN2_NC(KDIM1,KDIM2,KNDIMS)
+!
+USE MODD_SURF_PAR, ONLY : NUNDEF
+!
+USE MODI_GATHER_AND_WRITE_MPI
+USE MODI_UNPACK_SAME_RANK
+USE MODI_HANDLE_ERR
+!
+IMPLICIT NONE
+!
+INTEGER, INTENT(IN) :: KDIM1
+INTEGER, INTENT(IN) :: KDIM2
+INTEGER, INTENT(IN) :: KNDIMS
+!
+INTEGER, DIMENSION(KDIM1,KDIM2) :: ITAB2D    ! work array read in the file
+INTEGER, DIMENSION(KDIM1,KDIM2) :: IWORK_IGN ! work array read in the file
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN2_NC:WRITE_DATAN2_NC',0,ZHOOK_HANDLE)
+!
+ITAB2D(:,:) = NUNDEF
+!
+IF(.NOT.ALLOCATED(NMASK_IGN))THEN
+  IF (LMASK) THEN
+    CALL GATHER_AND_WRITE_MPI(KFIELD,ITAB2D(:,1:SIZE(KFIELD,2)),NMASK)
+  ELSE 
+    CALL GATHER_AND_WRITE_MPI(KFIELD,ITAB2D(:,1:SIZE(KFIELD,2)))
+  ENDIF
+ELSE
+  !ign grid 
+  IF (LMASK) THEN
+    CALL GATHER_AND_WRITE_MPI(KFIELD,IWORK_IGN(1:SIZE(NMASK_IGN),:),NMASK)
+  ELSE 
+    CALL GATHER_AND_WRITE_MPI(KFIELD,IWORK_IGN(1:SIZE(NMASK_IGN),:))
+  ENDIF
+  CALL UNPACK_SAME_RANK(NMASK_IGN,IWORK_IGN(1:SIZE(NMASK_IGN),:),ITAB2D(:,1:SIZE(KFIELD,2)))
+ENDIF
+!
+IF (NRANK==NPIO) THEN
+!$OMP SINGLE
+  IRET(5)=NF_PUT_VAR_INT(NID_NC,IVAR_ID,ITAB2D)
+  CALL HANDLE_ERR(IRET(5),HREC)  
+!$OMP END SINGLE
+ENDIF
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFN2_NC:WRITE_DATAN2_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_DATAN2_NC
+!
+END SUBROUTINE WRITE_SURFN2_NC
+!
+!     #############################################################
+      SUBROUTINE WRITE_SURFL1_NC (DGU, &
+                                  HREC,OFIELD,KRESP,HCOMMENT,HDIR)
+!     #############################################################
+!
+!!****  *WRITEL1* - routine to read a logical array
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_SURFEX_MPI, ONLY : NRANK, NPIO
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LMASK, NMASK, NMASK_IGN, LDEF
+!
+USE MODD_SURFEX_OMP, ONLY : LWORK0
+!
+USE MODI_IO_BUFF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE MODI_HANDLE_ERR
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+#ifdef SFX_MPI
+INCLUDE "mpif.h"
+#endif
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=*),      INTENT(IN) :: HREC     ! name of the article to be read
+LOGICAL, DIMENSION(:), INTENT(IN) :: OFIELD   ! array containing the data field
+INTEGER,               INTENT(OUT):: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100),    INTENT(IN) :: HCOMMENT
+ CHARACTER(LEN=1),      INTENT(IN) :: HDIR     ! type of field :
+                                              ! 'H' : field with
+                                              !       horizontal spatial dim.
+                                              ! '-' : no horizontal dim.
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(1) :: IDIMIDS
+INTEGER, DIMENSION(1) :: IDIMLEN
+INTEGER               :: IVAR_ID, JDIM, INDIMS
+INTEGER               :: JRET
+INTEGER, DIMENSION(3) :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFL1_NC',0,ZHOOK_HANDLE)
+!
+IRET(:) = 0
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+KRESP=0
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFL1_NC',1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+IF (NID_NC /= 0) THEN 
+  !
+  IF (NRANK==NPIO) THEN
+    !
+!$OMP SINGLE
+    !
+    ! 0. find filename
+    ! -----------------
+    !
+    IRET(1) = NF_INQ_DIMID(NID_NC,'Number_of_covers',IDIMIDS(1))
+    IRET(2) = NF_INQ_DIMLEN(NID_NC,IDIMIDS(1),IDIMLEN(1))
+    !
+    IF (LDEF) THEN
+      CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, HREC, HREC, IDIMIDS(1:1), YATT_TITLE, YATT, IVAR_ID, NF_CHAR, 1)
+    !
+    ELSE
+      JRET = NF_INQ_VARID(NID_NC, HREC, IVAR_ID)
+      CALL WRITE_DATAL1_NC(IDIMLEN(1))
+    ENDIF
+    !
+!$OMP END SINGLE
+    !
+  ENDIF
+  !
+ENDIF
+!
+!$OMP BARRIER
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFL1_NC',1,ZHOOK_HANDLE)
+!
+ CONTAINS
+!
+SUBROUTINE WRITE_DATAL1_NC(KDIM)
+!
+INTEGER, INTENT(IN) :: KDIM
+!
+ CHARACTER(LEN=1), DIMENSION(KDIM) :: YTAB1D  ! work array read in the file
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFL1_NC:WRITE_DATAL1_NC',0,ZHOOK_HANDLE)
+!
+YTAB1D(:) = ""
+!
+DO JRET=1,SIZE(OFIELD)
+  IF (OFIELD(JRET)) THEN
+    YTAB1D(JRET) ='T'
+  ELSE
+    YTAB1D(JRET) ='F'
+  ENDIF
+ENDDO  
+!
+! 2. Put variable
+!-----------------
+IRET(3)=NF_PUT_VAR_TEXT(NID_NC,IVAR_ID,YTAB1D)
+!
+ CALL HANDLE_ERR(IRET(3),HREC)
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFL1_NC:WRITE_DATAL1_NC',1,ZHOOK_HANDLE)
+END SUBROUTINE WRITE_DATAL1_NC
+!
+END SUBROUTINE WRITE_SURFL1_NC
+!
+!
+!     #############################################################
+      SUBROUTINE WRITE_SURFT0_NC (DGU, &
+                                  HREC,KYEAR,KMONTH,KDAY,PTIME,KRESP,HCOMMENT)
+!     #############################################################
+!
+!!****  *WRITET0* - routine to read a NETCDF  date_time scalar
+!
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LMASK, NMASK, NMASK_IGN, LDEF
+!
+USE MODD_SURFEX_OMP, ONLY : LWORK0
+!
+USE MODI_IO_BUFF
+!
+USE MODI_DEF_VAR_NETCDF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+!*      0.1   Declarations of arguments
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),  INTENT(IN)  :: HREC     ! name of the article to be read
+INTEGER,            INTENT(IN)  :: KYEAR    ! year
+INTEGER,            INTENT(IN)  :: KMONTH   ! month
+INTEGER,            INTENT(IN)  :: KDAY     ! day
+REAL,               INTENT(IN)  :: PTIME    ! time
+INTEGER,            INTENT(OUT) :: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100), INTENT(IN)  :: HCOMMENT
+!
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100), DIMENSION(1) :: YATT_TITLE, YATT
+INTEGER, DIMENSION(0) :: IDIMIDS
+ CHARACTER(LEN=12) :: YRECFM    ! Name of the article to be written
+INTEGER :: IVAR_ID, JRET, JWRK
+INTEGER :: JLEN
+INTEGER,DIMENSION(4) :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFT0_NC',0,ZHOOK_HANDLE)
+!
+KRESP=0
+!
+YATT_TITLE(1) = "comment"
+YATT(1) = HCOMMENT
+!
+ CALL IO_BUFF(&
+                HREC,'W',LWORK0)
+IF (LWORK0 .AND. LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFT0_NC',1,ZHOOK_HANDLE)
+IF (LWORK0) RETURN
+!
+DO JWRK=1,4
+  !
+  IF (JWRK == 1) THEN 
+    YRECFM = TRIM(HREC)//'-YEAR'
+  ELSEIF (JWRK == 2) THEN
+    YRECFM = TRIM(HREC)//'-MONTH'
+  ELSEIF (JWRK == 3) THEN
+    YRECFM = TRIM(HREC)//'-DAY'
+  ELSEIF (JWRK == 4) THEN
+    YRECFM=TRIM(HREC)//'-TIME'
+  ENDIF
+  ! 0. find filename
+  ! -----------------
+  !
+  IF (NID_NC /= 0) THEN
+    !
+    !
+    IF (JWRK==1) THEN
+      IF (LDEF) THEN
+        CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, YRECFM, YRECFM, IDIMIDS, YATT_TITLE, YATT, IVAR_ID,NF_INT)
+      ELSE
+        JRET = NF_INQ_VARID(NID_NC,YRECFM,IVAR_ID)
+        IRET(JWRK)=NF_PUT_VAR_INT(NID_NC,IVAR_ID,KYEAR)
+      ENDIF
+    ELSEIF (JWRK==2) THEN
+      IF (LDEF) THEN    
+        CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, YRECFM, YRECFM, IDIMIDS, YATT_TITLE, YATT, IVAR_ID,NF_INT)
+      ELSE
+        JRET = NF_INQ_VARID(NID_NC,YRECFM,IVAR_ID)        
+        IRET(JWRK)=NF_PUT_VAR_INT(NID_NC,IVAR_ID,KMONTH)
+      ENDIF        
+    ELSEIF (JWRK==3) THEN
+      IF (LDEF) THEN    
+        CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, YRECFM, YRECFM, IDIMIDS, YATT_TITLE, YATT, IVAR_ID,NF_INT)
+      ELSE
+        JRET = NF_INQ_VARID(NID_NC,YRECFM,IVAR_ID)        
+        IRET(JWRK)=NF_PUT_VAR_INT(NID_NC,IVAR_ID,KDAY)
+      ENDIF        
+    ELSEIF (JWRK==4) THEN
+      IF (LDEF) THEN    
+        CALL DEF_VAR_NETCDF(DGU, &
+                        NID_NC, YRECFM, YRECFM, IDIMIDS, YATT_TITLE, YATT, IVAR_ID,NF_DOUBLE)
+      ELSE
+        JRET = NF_INQ_VARID(NID_NC,YRECFM,IVAR_ID)        
+        IRET(JWRK)=NF_PUT_VAR_DOUBLE(NID_NC,IVAR_ID,PTIME)
+      ENDIF        
+    ENDIF
+  ENDIF
+ENDDO
+!
+! 3. Check for errors
+!--------------------
+DO JRET=1,4
+  IF (NID_NC==0.OR.IRET(JRET).NE.NF_NOERR) KRESP=1
+ENDDO
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFT0_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_SURFT0_NC
+!
+!     #############################################################
+      SUBROUTINE    WRITE_SURFT1_NC (DGU, &
+                                     HREC,KYEAR,KMONTH,KDAY,PTIME,KRESP,HCOMMENT)
+!     #############################################################
+!
+!!****  *WRITET0* - routine to read a NETCDF  date_time scalar
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LMASK, NMASK, NMASK_IGN
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+!*      0.1   Declarations of arguments
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),  INTENT(IN)  :: HREC     ! name of the article to be read
+INTEGER, DIMENSION(:), INTENT(IN)  :: KYEAR    ! year
+INTEGER, DIMENSION(:), INTENT(IN)  :: KMONTH   ! month
+INTEGER, DIMENSION(:), INTENT(IN)  :: KDAY     ! day
+REAL, DIMENSION(:), INTENT(IN)  :: PTIME    ! time
+INTEGER,            INTENT(OUT) :: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100), INTENT(IN)  :: HCOMMENT
+!
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100)    :: YNAME
+ CHARACTER(LEN=12) :: YRECFM    ! Name of the article to be written
+INTEGER :: JRET, JWRK, IDIMID
+INTEGER,DIMENSION(4) :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFT1_NC',0,ZHOOK_HANDLE)
+!
+KRESP=0
+!
+DO JWRK=1,4
+  !
+  IF (JWRK == 1) THEN 
+    YRECFM = TRIM(HREC)//'-YEAR'
+  ELSEIF (JWRK == 2) THEN
+    YRECFM = TRIM(HREC)//'-MONTH'
+  ELSEIF (JWRK == 3) THEN
+    YRECFM = TRIM(HREC)//'-DAY'
+  ELSEIF (JWRK == 4) THEN
+    YRECFM=TRIM(HREC)//'-TIME'
+  ENDIF
+  !
+  JRET = NF_INQ_DIMID(NID_NC,'Number_of_dates ',IDIMID)
+  !
+  IF (JRET==0) THEN
+    IF (JWRK==1) THEN
+      CALL WRITE_SURFN1_NC(DGU, &
+                           YRECFM,KYEAR,IRET(JWRK),HCOMMENT,'-','Number_of_dates ')
+    ELSEIF (JWRK==2) THEN
+      CALL WRITE_SURFN1_NC(DGU, &
+                           YRECFM,KMONTH,IRET(JWRK),HCOMMENT,'-','Number_of_dates ')
+    ELSEIF (JWRK==3) THEN
+      CALL WRITE_SURFN1_NC(DGU, &
+                           YRECFM,KDAY,IRET(JWRK),HCOMMENT,'-','Number_of_dates ')
+    ELSEIF (JWRK==4) THEN
+      CALL WRITE_SURFX1_NC(DGU, &
+                           YRECFM,PTIME,IRET(JWRK),HCOMMENT,'-','Number_of_dates ')
+    ENDIF
+  ELSE
+    IF (JWRK==1) THEN
+      CALL WRITE_SURFN1_NC(DGU, &
+                           YRECFM,KYEAR,IRET(JWRK),HCOMMENT,'-')
+    ELSEIF (JWRK==2) THEN
+      CALL WRITE_SURFN1_NC(DGU, &
+                           YRECFM,KMONTH,IRET(JWRK),HCOMMENT,'-')
+    ELSEIF (JWRK==3) THEN
+      CALL WRITE_SURFN1_NC(DGU, &
+                           YRECFM,KDAY,IRET(JWRK),HCOMMENT,'-')
+    ELSEIF (JWRK==4) THEN
+      CALL WRITE_SURFX1_NC(DGU, &
+                           YRECFM,PTIME,IRET(JWRK),HCOMMENT,'-')
+    ENDIF
+  ENDIF    
+  !
+ENDDO
+!
+! 3. Check for errors
+!--------------------
+DO JRET=1,4
+  IF (NID_NC==0.OR.IRET(JRET).NE.NF_NOERR) KRESP=1
+ENDDO
+!
+!$OMP BARRIER
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFT1_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_SURFT1_NC
+!
+!     #############################################################
+      SUBROUTINE    WRITE_SURFT2_NC (DGU, &
+                                     HREC,KYEAR,KMONTH,KDAY,PTIME,KRESP,HCOMMENT)
+!     #############################################################
+!
+!!****  *WRITET0* - routine to read a NETCDF  date_time scalar
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+!
+USE MODD_IO_SURF_NC, ONLY : NID_NC, LMASK, NMASK, NMASK_IGN
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+INCLUDE "netcdf.inc"
+!
+!*      0.1   Declarations of arguments
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+!
+ CHARACTER(LEN=12),  INTENT(IN)  :: HREC     ! name of the article to be read
+INTEGER, DIMENSION(:,:), INTENT(IN)  :: KYEAR    ! year
+INTEGER, DIMENSION(:,:), INTENT(IN)  :: KMONTH   ! month
+INTEGER, DIMENSION(:,:), INTENT(IN)  :: KDAY     ! day
+REAL, DIMENSION(:,:),    INTENT(IN)  :: PTIME    ! time
+INTEGER,            INTENT(OUT) :: KRESP    ! KRESP  : return-code if a problem appears
+ CHARACTER(LEN=100), INTENT(IN)  :: HCOMMENT
+!
+!*      0.2   Declarations of local variables
+!
+ CHARACTER(LEN=100)    :: YNAME
+ CHARACTER(LEN=12) :: YRECFM    ! Name of the article to be written
+INTEGER :: JRET, JWRK, IDIMID
+INTEGER,DIMENSION(4) :: IRET
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFT2_NC',0,ZHOOK_HANDLE)
+!
+KRESP=0
+!
+DO JWRK=1,4
+  !
+  IF (JWRK == 1) THEN 
+    YRECFM = TRIM(HREC)//'-YEAR'
+  ELSEIF (JWRK == 2) THEN
+    YRECFM = TRIM(HREC)//'-MONTH'
+  ELSEIF (JWRK == 3) THEN
+    YRECFM = TRIM(HREC)//'-DAY'
+  ELSEIF (JWRK == 4) THEN
+    YRECFM=TRIM(HREC)//'-TIME'
+  ENDIF
+  !
+  JRET = NF_INQ_DIMID(NID_NC,'Number_of_dates ',IDIMID)
+  !
+  IF (JRET==0) THEN
+    IF (JWRK==1) THEN
+      CALL WRITE_SURFN2_NC(DGU, &
+                           YRECFM,KYEAR,IRET(JWRK),HCOMMENT,'-','Number_of_dates ')
+    ELSEIF (JWRK==2) THEN
+      CALL WRITE_SURFN2_NC(DGU, &
+                           YRECFM,KMONTH,IRET(JWRK),HCOMMENT,'-','Number_of_dates ')
+    ELSEIF (JWRK==3) THEN
+      CALL WRITE_SURFN2_NC(DGU, &
+                           YRECFM,KDAY,IRET(JWRK),HCOMMENT,'-','Number_of_dates ')
+    ELSEIF (JWRK==4) THEN
+      CALL WRITE_SURFX2_NC(DGU, &
+                           YRECFM,PTIME,IRET(JWRK),HCOMMENT,'-','Number_of_dates ')
+    ENDIF
+  ELSE
+    IF (JWRK==1) THEN
+      CALL WRITE_SURFN2_NC(DGU, &
+                           YRECFM,KYEAR,IRET(JWRK),HCOMMENT,'-')
+    ELSEIF (JWRK==2) THEN
+      CALL WRITE_SURFN2_NC(DGU, &
+                           YRECFM,KMONTH,IRET(JWRK),HCOMMENT,'-')
+    ELSEIF (JWRK==3) THEN
+      CALL WRITE_SURFN2_NC(DGU, &
+                           YRECFM,KDAY,IRET(JWRK),HCOMMENT,'-')
+    ELSEIF (JWRK==4) THEN
+      CALL WRITE_SURFX2_NC(DGU, &
+                           YRECFM,PTIME,IRET(JWRK),HCOMMENT,'-')
+    ENDIF
+  ENDIF          
+  !
+ENDDO
+!
+! 3. Check for errors
+!--------------------
+DO JRET=1,4
+  IF (NID_NC==0.OR.IRET(JRET).NE.NF_NOERR) KRESP=1
+ENDDO
+!
+!$OMP BARRIER
+!
+IF (LHOOK) CALL DR_HOOK('MODE_WRITE_SURF_NC:WRITE_SURFT2_NC',1,ZHOOK_HANDLE)
+!
+END SUBROUTINE WRITE_SURFT2_NC
+!
+END MODULE MODE_WRITE_SURF_NC

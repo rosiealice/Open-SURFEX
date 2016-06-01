@@ -1,0 +1,387 @@
+!SFX_LIC Copyright 1994-2014 CNRS, Meteo-France and Universite Paul Sabatier
+!SFX_LIC This is part of the SURFEX software governed by the CeCILL-C licence
+!SFX_LIC version 1. See LICENSE, CeCILL-C_V1-en.txt and CeCILL-C_V1-fr.txt  
+!SFX_LIC for details. version 1.
+!     #########
+      SUBROUTINE DIAG_WATFLUX_INIT_n (&
+                                       DGU, DGW, W, &
+                                      HPROGRAM,KLU,KSW)
+!     #####################
+!
+!!****  *DIAG_WATFLUX_INIT_n* - routine to initialize WATFLUX diagnostic variables
+!!
+!!    PURPOSE
+!!    -------
+!!
+!!**  METHOD
+!!    ------
+!!
+!!    EXTERNAL
+!!    --------
+!!
+!!
+!!    IMPLICIT ARGUMENTS
+!!    ------------------
+!!
+!!    REFERENCE
+!!    ---------
+!!
+!!
+!!    AUTHOR
+!!    ------
+!!      V. Masson   *Meteo France*
+!!
+!!    MODIFICATIONS
+!!    -------------
+!!      Original    01/2004 
+!       B. decharme 04/2013 : Add EVAP and SUBL diag
+!-------------------------------------------------------------------------------
+!
+!*       0.    DECLARATIONS
+!              ------------
+!
+!
+!
+USE MODD_DIAG_SURF_ATM_n, ONLY : DIAG_SURF_ATM_t
+USE MODD_DIAG_WATFLUX_n, ONLY : DIAG_WATFLUX_t
+USE MODD_WATFLUX_n, ONLY : WATFLUX_t
+!
+!
+!
+#ifdef SFX_OL
+USE MODN_IO_OFFLINE,     ONLY : LRESTART
+#endif
+USE MODD_SURF_PAR,       ONLY : XUNDEF
+USE MODD_SFX_OASIS,      ONLY : LCPL_SEA, LCPL_SEAICE
+!
+!
+USE MODI_READ_SURF
+!
+USE YOMHOOK   ,ONLY : LHOOK,   DR_HOOK
+USE PARKIND1  ,ONLY : JPRB
+!
+IMPLICIT NONE
+!
+!*       0.1   Declarations of arguments
+!              -------------------------
+!
+!
+!
+!
+TYPE(DIAG_SURF_ATM_t), INTENT(INOUT) :: DGU
+TYPE(DIAG_WATFLUX_t), INTENT(INOUT) :: DGW
+TYPE(WATFLUX_t), INTENT(INOUT) :: W
+!
+INTEGER, INTENT(IN) :: KLU   ! size of arrays
+INTEGER, INTENT(IN) :: KSW   ! number of SW spectral bands
+ CHARACTER(LEN=6), INTENT(IN):: HPROGRAM  ! program calling
+!
+!*       0.2   Declarations of local variables
+!              -------------------------------
+!
+INTEGER           :: IVERSION
+INTEGER           :: IRESP          ! IRESP  : return-code if a problem appears
+ CHARACTER(LEN=12) :: YREC           ! Name of the article to be read
+REAL(KIND=JPRB) :: ZHOOK_HANDLE
+!
+!-------------------------------------------------------------------------------
+!
+!* surface energy budget
+!
+IF (LHOOK) CALL DR_HOOK('DIAG_WATFLUX_INIT_N',0,ZHOOK_HANDLE)
+!
+ALLOCATE(DGW%XDIAG_TS(KLU))
+DGW%XDIAG_TS = XUNDEF
+!
+IF (DGW%LSURF_BUDGET.OR.DGW%LSURF_BUDGETC) THEN
+  ALLOCATE(DGW%XRN     (KLU))
+  ALLOCATE(DGW%XH      (KLU))
+  ALLOCATE(DGW%XLE     (KLU))
+  ALLOCATE(DGW%XLEI    (KLU))
+  ALLOCATE(DGW%XGFLUX  (KLU))
+  ALLOCATE(DGW%XEVAP   (KLU))
+  ALLOCATE(DGW%XSUBL   (KLU))
+  ALLOCATE(DGW%XSWD    (KLU))
+  ALLOCATE(DGW%XSWU    (KLU))
+  ALLOCATE(DGW%XLWD    (KLU))
+  ALLOCATE(DGW%XLWU    (KLU))
+  ALLOCATE(DGW%XSWBD   (KLU,KSW))
+  ALLOCATE(DGW%XSWBU   (KLU,KSW))
+  ALLOCATE(DGW%XFMU    (KLU))
+  ALLOCATE(DGW%XFMV    (KLU))
+  !
+  DGW%XRN      = XUNDEF
+  DGW%XH       = XUNDEF
+  DGW%XLE      = XUNDEF
+  DGW%XLEI     = XUNDEF
+  DGW%XGFLUX   = XUNDEF
+  DGW%XEVAP    = XUNDEF
+  DGW%XSUBL    = XUNDEF  
+  DGW%XSWD     = XUNDEF
+  DGW%XSWU     = XUNDEF
+  DGW%XLWD     = XUNDEF
+  DGW%XLWU     = XUNDEF
+  DGW%XSWBD    = XUNDEF
+  DGW%XSWBU    = XUNDEF
+  DGW%XFMU     = XUNDEF
+  DGW%XFMV     = XUNDEF
+ELSE
+  ALLOCATE(DGW%XRN     (0))
+  ALLOCATE(DGW%XH      (0))
+  ALLOCATE(DGW%XLE     (0))
+  ALLOCATE(DGW%XLEI    (0))
+  ALLOCATE(DGW%XGFLUX  (0))
+  ALLOCATE(DGW%XEVAP   (0))
+  ALLOCATE(DGW%XSUBL   (0))  
+  ALLOCATE(DGW%XSWD    (0))
+  ALLOCATE(DGW%XSWU    (0))
+  ALLOCATE(DGW%XLWD    (0))
+  ALLOCATE(DGW%XLWU    (0))
+  ALLOCATE(DGW%XSWBD   (0,0))
+  ALLOCATE(DGW%XSWBU   (0,0))
+  ALLOCATE(DGW%XFMU    (0))
+  ALLOCATE(DGW%XFMV    (0))
+END IF
+!
+!* cumulative surface energy budget
+!
+#ifdef SFX_OL
+IF (DGW%LSURF_BUDGETC .OR. (LRESTART .AND. .NOT.DGW%LRESET_BUDGETC)) THEN
+#else
+IF (DGW%LSURF_BUDGETC .OR. .NOT.DGW%LRESET_BUDGETC) THEN
+#endif
+!        
+  ALLOCATE(DGW%XRNC    (KLU))
+  ALLOCATE(DGW%XHC     (KLU))
+  ALLOCATE(DGW%XLEC    (KLU))
+  ALLOCATE(DGW%XLEIC   (KLU))
+  ALLOCATE(DGW%XGFLUXC (KLU))
+  ALLOCATE(DGW%XEVAPC  (KLU))
+  ALLOCATE(DGW%XSUBLC  (KLU))  
+  ALLOCATE(DGW%XSWDC   (KLU))
+  ALLOCATE(DGW%XSWUC   (KLU))
+  ALLOCATE(DGW%XLWDC   (KLU))
+  ALLOCATE(DGW%XLWUC   (KLU))
+  ALLOCATE(DGW%XFMUC   (KLU))
+  ALLOCATE(DGW%XFMVC   (KLU))
+!
+  IF (.NOT. DGU%LREAD_BUDGETC) THEN        
+     DGW%XRNC    = 0.0
+     DGW%XHC     = 0.0
+     DGW%XLEC    = 0.0
+     DGW%XLEIC   = 0.0
+     DGW%XGFLUXC = 0.0
+     DGW%XEVAPC  = 0.0
+     DGW%XSUBLC  = 0.0
+     DGW%XSWDC   = 0.0
+     DGW%XSWUC   = 0.0
+     DGW%XLWDC   = 0.0
+     DGW%XLWUC   = 0.0
+     DGW%XFMUC   = 0.0
+     DGW%XFMVC   = 0.0
+  ELSEIF (DGU%LREAD_BUDGETC.AND.DGW%LRESET_BUDGETC) THEN
+     DGW%XRNC    = 0.0
+     DGW%XHC     = 0.0
+     DGW%XLEC    = 0.0
+     DGW%XLEIC   = 0.0
+     DGW%XGFLUXC = 0.0
+     DGW%XEVAPC  = 0.0
+     DGW%XSUBLC  = 0.0     
+     DGW%XSWDC   = 0.0
+     DGW%XSWUC   = 0.0
+     DGW%XLWDC   = 0.0
+     DGW%XLWUC   = 0.0
+     DGW%XFMUC   = 0.0
+     DGW%XFMVC   = 0.0
+  ELSE
+     YREC='RNC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XRNC,IRESP)
+     YREC='HC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XHC ,IRESP)
+     YREC='LEC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XLEC,IRESP)
+     YREC='LEIC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XLEIC,IRESP)     
+     YREC='GFLUXC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XGFLUXC,IRESP)
+     YREC='SWDC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XSWDC,IRESP)
+     YREC='SWUC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XSWUC,IRESP)
+     YREC='LWDC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XLWDC,IRESP)
+     YREC='LWUC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XLWUC,IRESP)
+     YREC='FMUC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XFMUC,IRESP)
+     YREC='FMVC_WAT'
+     CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XFMVC,IRESP)
+!
+     CALL READ_SURF(&
+                    HPROGRAM,'VERSION',IVERSION,IRESP)
+      IF (IVERSION<8)THEN
+         DGW%XEVAPC  = 0.0
+         DGW%XSUBLC  = 0.0              
+      ELSE
+         YREC='EVAPC_WAT'
+         CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XEVAPC,IRESP)
+         YREC='SUBLC_WAT'
+         CALL READ_SURF(&
+                    HPROGRAM,YREC,DGW%XSUBLC,IRESP)              
+      ENDIF
+!
+  ENDIF   
+ELSE
+  ALLOCATE(DGW%XRNC    (0))
+  ALLOCATE(DGW%XHC     (0))
+  ALLOCATE(DGW%XLEC    (0))
+  ALLOCATE(DGW%XLEIC   (0))
+  ALLOCATE(DGW%XGFLUXC (0))
+  ALLOCATE(DGW%XEVAPC  (0))
+  ALLOCATE(DGW%XSUBLC  (0))  
+  ALLOCATE(DGW%XSWDC   (0))
+  ALLOCATE(DGW%XSWUC   (0))
+  ALLOCATE(DGW%XLWDC   (0))
+  ALLOCATE(DGW%XLWUC   (0))
+  ALLOCATE(DGW%XFMUC   (0))
+  ALLOCATE(DGW%XFMVC   (0))  
+ENDIF
+!
+!* parameters at 2m
+!
+IF (DGW%N2M>=1) THEN
+  ALLOCATE(DGW%XRI     (KLU))
+  ALLOCATE(DGW%XT2M    (KLU))
+  ALLOCATE(DGW%XT2M_MIN(KLU))
+  ALLOCATE(DGW%XT2M_MAX(KLU))
+  ALLOCATE(DGW%XQ2M    (KLU))
+  ALLOCATE(DGW%XHU2M   (KLU))
+  ALLOCATE(DGW%XHU2M_MIN(KLU))
+  ALLOCATE(DGW%XHU2M_MAX(KLU))  
+  ALLOCATE(DGW%XZON10M (KLU))
+  ALLOCATE(DGW%XMER10M (KLU))
+  ALLOCATE(DGW%XWIND10M (KLU))
+  ALLOCATE(DGW%XWIND10M_MAX(KLU))  
+  !
+  DGW%XRI      = XUNDEF
+  DGW%XT2M     = XUNDEF
+  DGW%XT2M_MIN = XUNDEF
+  DGW%XT2M_MAX = 0.0
+  DGW%XQ2M     = XUNDEF
+  DGW%XHU2M    = XUNDEF
+  DGW%XHU2M_MIN= XUNDEF
+  DGW%XHU2M_MAX=-XUNDEF  
+  DGW%XZON10M  = XUNDEF
+  DGW%XMER10M  = XUNDEF
+  DGW%XWIND10M = XUNDEF
+  DGW%XWIND10M_MAX = 0.0  
+ELSE
+  ALLOCATE(DGW%XRI      (0))
+  ALLOCATE(DGW%XT2M     (0))
+  ALLOCATE(DGW%XT2M_MIN (0))
+  ALLOCATE(DGW%XT2M_MAX (0))
+  ALLOCATE(DGW%XQ2M     (0))
+  ALLOCATE(DGW%XHU2M    (0))
+  ALLOCATE(DGW%XHU2M_MIN(0))
+  ALLOCATE(DGW%XHU2M_MAX(0))
+  ALLOCATE(DGW%XZON10M  (0))
+  ALLOCATE(DGW%XMER10M  (0))
+  ALLOCATE(DGW%XWIND10M (0))
+  ALLOCATE(DGW%XWIND10M_MAX(0))
+END IF
+!
+!* transfer coefficients
+!
+IF (DGW%LCOEF) THEN
+  ALLOCATE(DGW%XCD     (KLU))
+  ALLOCATE(DGW%XCH     (KLU))
+  ALLOCATE(DGW%XCE     (KLU))
+  ALLOCATE(DGW%XZ0     (KLU))
+  ALLOCATE(DGW%XZ0H    (KLU))
+  !
+  DGW%XCD      = XUNDEF
+  DGW%XCH      = XUNDEF
+  DGW%XCE      = XUNDEF
+  DGW%XZ0      = XUNDEF
+  DGW%XZ0H     = XUNDEF
+ELSE
+  ALLOCATE(DGW%XCD     (0))
+  ALLOCATE(DGW%XCH     (0))
+  ALLOCATE(DGW%XCE     (0))
+  ALLOCATE(DGW%XZ0     (0))
+  ALLOCATE(DGW%XZ0H    (0))
+END IF
+!
+!
+!* surface humidity
+!
+IF (DGW%LSURF_VARS) THEN
+  ALLOCATE(DGW%XQS     (KLU))
+  !
+  DGW%XQS      = XUNDEF
+ELSE
+  ALLOCATE(DGW%XQS     (0))
+END IF
+!
+IF(LCPL_SEA)THEN
+!        
+  ALLOCATE(W%XCPL_WATER_WIND(KLU))
+  ALLOCATE(W%XCPL_WATER_FWSU(KLU))
+  ALLOCATE(W%XCPL_WATER_FWSV(KLU))
+  ALLOCATE(W%XCPL_WATER_SNET(KLU))
+  ALLOCATE(W%XCPL_WATER_HEAT(KLU))
+  ALLOCATE(W%XCPL_WATER_EVAP(KLU))
+  ALLOCATE(W%XCPL_WATER_RAIN(KLU))
+  ALLOCATE(W%XCPL_WATER_SNOW(KLU))
+  ALLOCATE(W%XCPL_WATER_FWSM(KLU))
+  W%XCPL_WATER_WIND(:) = 0.0
+  W%XCPL_WATER_FWSU(:) = 0.0
+  W%XCPL_WATER_FWSV(:) = 0.0
+  W%XCPL_WATER_SNET(:) = 0.0
+  W%XCPL_WATER_HEAT(:) = 0.0
+  W%XCPL_WATER_EVAP(:) = 0.0
+  W%XCPL_WATER_RAIN(:) = 0.0
+  W%XCPL_WATER_SNOW(:) = 0.0        
+  W%XCPL_WATER_FWSM(:) = 0.0
+!
+ELSE
+  ALLOCATE(W%XCPL_WATER_WIND(0))
+  ALLOCATE(W%XCPL_WATER_FWSU(0))
+  ALLOCATE(W%XCPL_WATER_FWSV(0))
+  ALLOCATE(W%XCPL_WATER_SNET(0))
+  ALLOCATE(W%XCPL_WATER_HEAT(0))
+  ALLOCATE(W%XCPL_WATER_EVAP(0))
+  ALLOCATE(W%XCPL_WATER_RAIN(0))
+  ALLOCATE(W%XCPL_WATER_SNOW(0))
+  ALLOCATE(W%XCPL_WATER_FWSM(0))
+ENDIF
+!
+IF(LCPL_SEAICE)THEN
+  ALLOCATE(W%XCPL_WATERICE_SNET(KLU))
+  ALLOCATE(W%XCPL_WATERICE_HEAT(KLU))
+  ALLOCATE(W%XCPL_WATERICE_EVAP(KLU))
+  W%XCPL_WATERICE_SNET(:) = 0.0
+  W%XCPL_WATERICE_HEAT(:) = 0.0
+  W%XCPL_WATERICE_EVAP(:) = 0.0
+ELSE
+  ALLOCATE(W%XCPL_WATERICE_SNET(0))
+  ALLOCATE(W%XCPL_WATERICE_HEAT(0))
+  ALLOCATE(W%XCPL_WATERICE_EVAP(0))
+ENDIF
+IF (LHOOK) CALL DR_HOOK('DIAG_WATFLUX_INIT_N',1,ZHOOK_HANDLE)
+!
+!-------------------------------------------------------------------------------
+!
+END SUBROUTINE DIAG_WATFLUX_INIT_n
