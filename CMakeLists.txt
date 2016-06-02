@@ -16,6 +16,9 @@ file(GLOB src_DRHOOK
 file(GLOB src_ASSIM
     "./src/ASSIM/*.F90")
 
-add_executable (final.exe ${src_ASSIM} ${src_DRHOOK} ${src_SURFEX} src/LIB/GELATO/modd_types_glt.F90 src/LIB/GELATO/modd_glt_param.F90)
+file(GLOB src_OFFLIN
+    "./src/OFFLIN/*.F90")
+
+add_executable (final.exe ${src_OFFLIN} ${src_ASSIM} ${src_DRHOOK} ${src_SURFEX} src/LIB/GELATO/modd_types_glt.F90 src/LIB/GELATO/modd_glt_param.F90)
 target_include_directories(final.exe PRIVATE ${GRIB_API_INCLUDE_DIRS})
 target_link_libraries(final.exe LINK_PUBLIC GELATO ${GRIB_API_LIBRARIES})
